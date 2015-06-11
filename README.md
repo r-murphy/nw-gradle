@@ -4,8 +4,8 @@ NetWeaver gradle tasks for generating SDA/EAR files. The main purpose of this is
 ## System Requirements
 - [Java SE](http://www.oracle.com/technetwork/java/javase/overview)
 - [Gradle](http://www.gradle.org)
-  - Latest version tested on 2.4
-  - Original version tested on 2.3
+	- Latest version tested on 2.4
+	- Original version tested on 2.3
 
 ## Using It
 
@@ -22,12 +22,12 @@ Add it to your gradle.build
 
 ```groovy
 buildscript {
-    repositories {
-        mavenLocal()
-    }
-    dependencies {
-        classpath(group: 'rm.tools', name: 'nw-gradle', version: '2.3+')
-    }
+	repositories {
+		mavenLocal()
+	}
+	dependencies {
+		classpath(group: 'rm.tools', name: 'nw-gradle', version: '2.3+')
+	}
 }
 ```
 
@@ -37,8 +37,8 @@ The plugin is typically not used directly, although it can be. Instead, it's typ
 
 ```groovy
 project(:MyEarPrj) {
-  apply plugin: 'nw-ear'
-  ...
+	apply plugin: 'nw-ear'
+	...
 }
 ```
 
@@ -51,20 +51,20 @@ Additionally, it provides a `sapManifest` closure on the convention to override 
 ```groovy
 ext.vendor = 'me'
 nwear {
-    destinationDir = rootProject.file('dist')    # instead of within nested project
-    archiveName = project.name + '.ear'          # no version
-    manifest {
-        attributes("Implementation-Vendor-Id": vendor)
-    }
-    sapManifest {
-        attributes("keyvendor": vendor)
-    }
-    deploymentDescriptor {
-        version = 5
-    }
-    doLast {
-      println "---$archivePath"
-    }
+	destinationDir = rootProject.file('dist')	# instead of within nested project
+	archiveName = project.name + '.ear'			# no version
+	manifest {
+		attributes("Implementation-Vendor-Id": vendor)
+	}
+	sapManifest {
+		attributes("keyvendor": vendor)
+	}
+	deploymentDescriptor {
+		version = 5
+	}
+	doLast {
+		println "---$archivePath"
+	}
 }
 ```
 
@@ -73,8 +73,8 @@ The NW Web plugin is used on a web project to create a war file wrapped in a NW 
 
 ```groovy
 project(:MyWebPrj) {
-  apply plugin: 'nw-web'
-  ...
+	apply plugin: 'nw-web'
+	...
 }
 ```
 
@@ -93,15 +93,15 @@ Example:
 ```groovy
 //These are all optional configurations.
 war {
-  archiveName = project.name + '.war'
-  webXml = project.file('WebContent/WEB-INF/web.xml')
-  destinationDir = rootProject.file('dist')
-  rootSpec.eachFile {
-  println("\t$it.name")
-  }
-  doLast {
-    println "---$archivePath"
-  }
+	archiveName = project.name + '.war'
+	webXml = project.file('WebContent/WEB-INF/web.xml')
+	destinationDir = rootProject.file('dist')
+	rootSpec.eachFile {
+	println("\t$it.name")
+	}
+	doLast {
+	println "---$archivePath"
+	}
 }
 ```
 
@@ -112,8 +112,8 @@ The NW Web plugin is used on a NW EJB project, such as adapter modules. There wi
 
 ```groovy
 project(:MyModulePrj) {
-  apply plugin: 'nw-ejb'
-  ...
+	apply plugin: 'nw-ejb'
+	...
 }
 ```
 
@@ -136,8 +136,8 @@ The first and simplest is to put all the SAP jars into a folder and just use a f
 
 ```groovy
 dependencies {
-  runtime files('libs/a.jar', 'libs/b.jar')
-  runtime fileTree(dir: 'libs', include: '*.jar')
+	runtime files('libs/a.jar', 'libs/b.jar')
+	runtime fileTree(dir: 'libs', include: '*.jar')
 }
 ```
 
@@ -156,12 +156,12 @@ Or many files at once:
 ```sh
 #!/usr/bin/env bash
 for file in `find . -name '*.jar' | sort`; do
-  filename=$(basename $file .jar)
-  cleanname=$(echo $filename | sed 's/~/-/g')
-  cmd="mvn install:install-file -Dfile=\"$file\" -DgroupId=\"com.sap.pi\" -DartifactId=\"$cleanname\" -Dversion=\"7.31\" -Dpackaging=jar"
-  echo $cmd >> $outputSh
-  cmdBat="call $cmd"
-  echo $cmdBat >> $outputBat
+	filename=$(basename $file .jar)
+	cleanname=$(echo $filename | sed 's/~/-/g')
+	cmd="mvn install:install-file -Dfile=\"$file\" -DgroupId=\"com.sap.pi\" -DartifactId=\"$cleanname\" -Dversion=\"7.31\" -Dpackaging=jar"
+	echo $cmd >> $outputSh
+	cmdBat="call $cmd"
+	echo $cmdBat >> $outputBat
 done
 ```
 
