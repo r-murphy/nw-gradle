@@ -181,8 +181,9 @@ I wish I could set up a public maven repo with all the NetWeaver jar files in it
 Check out the example folder for a more in depth example of a multi-project build with a common utility project, a web project and an ejb module project.
 
 ## Future Plans / TODO
-- Publishing to Maven Central
+- More tests
 - Get EJB EARs working properly
+- Publishing to Maven Central
 - default web.xml path in nw-web
 - sda-dd.xml filename configuration
 - Login Modules

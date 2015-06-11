@@ -31,7 +31,6 @@ The nw-* plugins support filtering dependencies from provided, providedCompile a
 
 The nw-ejb plugin also adds a providedRuntime dependency configuration to its own project, but not to
 nested project dependencies.
-
 **/
 
 subprojects {
@@ -45,6 +44,9 @@ subprojects {
   apply plugin: 'java'
   jar {
     archiveName = project.name + '.jar' //no version to match NWDS. good idea or bad?
+    rootSpec.eachFile {
+      println(" + $it.name")
+    }
   }
 
   dependencies {
@@ -59,11 +61,11 @@ subprojects {
   }
 }
 
-project(':ex-web-proj') {
+project(':multi-project-web') {
   apply plugin: 'nw-web'
   apply plugin: 'eclipse-wtp'
   dependencies {
-    compile(project(':ex-util-proj'))
+    compile(project(':multi-project-util'))
     providedCompile('javax.servlet:servlet-api:2.5', 'javax.servlet:jstl:1.1.2')
   }
   eclipse {
@@ -79,6 +81,9 @@ project(':ex-web-proj') {
   }
   war {
     archiveName = project.name + '.war' //no version to match NWDS. good idea or bad?
+    rootSpec.eachFile {
+      println(" + $it.name")
+    }
   }
 
   //we'll leave sourceSets as defaults (maven convention)
@@ -86,13 +91,14 @@ project(':ex-web-proj') {
   //sourceSets.main.java.srcDir 'src' //to match eclipse/NWDS defaults
 }
 
-project(':ex-ejb-proj') {
+project(':multi-project-ejb') {
   apply plugin: 'nw-ejb'
   apply plugin: 'eclipse-wtp'
   sourceSets.main.java.srcDir 'ejbModule' //to match NWDS
   sourceSets.test.java.srcDir 'test'
   dependencies {
-    compile(project(':ex-util-proj'))
+    compile(project(':multi-project-util'))
+    providedCompile('javax.ejb:ejb-api:3.0') //providedCompile added nw-ejb
   }
   eclipse {
     wtp {
@@ -104,7 +110,7 @@ project(':ex-ejb-proj') {
   }
 }
 
-project(':ex-util-proj') {
+project(':multi-project-util') {
   //if java plugin is not applied to all subprojects above,
   //make sure to do so here. all dependent project of nw-web and nw-ejb projects
   //must have the java plugin applied due to some internal gradle requirements

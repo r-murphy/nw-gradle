@@ -1,0 +1,1 @@
+include 'multi-project-util', 'multi-project-ejb', 'multi-project-web'

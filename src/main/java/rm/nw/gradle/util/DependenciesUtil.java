@@ -112,7 +112,8 @@ public class DependenciesUtil {
    * from a project. non-recursively
    */
   private static Set<File> getProvidedXFiles(final Project project) {
-    Set<File> set = getConfigurationFiles(project, WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME);
+    Set<File> set = new HashSet<File>();
+    set.addAll(getConfigurationFiles(project, WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME));
     set.addAll(getConfigurationFiles(project, "provided")); //from propdeps and maven
     set.addAll(getConfigurationFiles(project, WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME));
     return set;
