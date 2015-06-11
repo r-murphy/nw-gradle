@@ -1,0 +1,16 @@
+#gradle stuff
+.gradle/
+.build/
+build/
+
+#Java
+*.class
+bin
+
+#IDEs
+nbproject/
+.settings/
+.classpath
+.project
+
+*.log
