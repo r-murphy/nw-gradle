@@ -11,12 +11,12 @@ NetWeaver gradle tasks for generating SDA/EAR files. The main purpose of this is
 
 First clone this repo
 
-  git clone git@github.com:r-murphy/nw-gradle.git
+	git clone git@github.com:r-murphy/nw-gradle.git
 
 Then install to local maven:
 
-  cd nw-gradle
-  gradle install
+	cd nw-gradle
+	gradle install
 
 Add it to your gradle.build
 
