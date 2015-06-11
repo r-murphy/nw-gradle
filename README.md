@@ -144,6 +144,10 @@ Contributions are welcome.
 	* Alternatively, use the Eclipse Formatter from https://github.com/google/styleguide/blob/gh-pages/eclipse-java-google-style.xml
 * Submit pull request.
 
+## License
+
+See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
+
 ---
 
 Copyright (c) 2015 Ryan Murphy.
