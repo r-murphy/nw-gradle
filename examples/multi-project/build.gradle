@@ -45,19 +45,15 @@ subprojects {
   jar {
     archiveName = project.name + '.jar' //no version to match NWDS. good idea or bad?
     rootSpec.eachFile {
-      println(" + $it.name")
+      println(" +> $it.name")
     }
   }
 
   dependencies {
+    //we can list common cross-project dependencies here
+    //but avoid using provided or providedCompile until after
+    //the nw-* plgins are added, so we use the right one
     testCompile 'junit:junit:4.+'
-
-    //Example of provided sap lib. See 'propdeps' for more info on the provided configuration
-    //provided(group: 'com.sap.nw', name: 'sap.com-tc-logging-java-impl', version: '7.+')
-
-    //we'll use commons-io to simulate an SAP dependency used by all projects
-    //normally you'd have this as compile resource if you really need it
-    provided('commons-io:commons-io:1.4')
   }
 }
 
@@ -68,24 +64,6 @@ project(':multi-project-web') {
     compile(project(':multi-project-util'))
     providedCompile('javax.servlet:servlet-api:2.5', 'javax.servlet:jstl:1.1.2')
   }
-  eclipse {
-    wtp {
-      facet {
-        facet name: 'jst.web', version: '2.5'
-        facet name: 'java', version: '1.6'
-      }
-      component {
-        resource sourcePath: '/WebContent', deployPath: '/'
-      }
-    }
-  }
-  war {
-    archiveName = project.name + '.war' //no version to match NWDS. good idea or bad?
-    rootSpec.eachFile {
-      println(" + $it.name")
-    }
-  }
-
   //we'll leave sourceSets as defaults (maven convention)
   //feel free to change for your project by uncommenting the following
   //sourceSets.main.java.srcDir 'src' //to match eclipse/NWDS defaults
@@ -93,30 +71,101 @@ project(':multi-project-web') {
 
 project(':multi-project-ejb') {
   apply plugin: 'nw-ejb'
-  apply plugin: 'eclipse-wtp'
-  sourceSets.main.java.srcDir 'ejbModule' //to match NWDS
-  sourceSets.test.java.srcDir 'test'
   dependencies {
     compile(project(':multi-project-util'))
-    providedCompile('javax.ejb:ejb-api:3.0') //providedCompile added nw-ejb
   }
-  eclipse {
-    wtp {
-      facet {
-        facet name: 'jst.ejb', version: '3.0'
-        facet name: 'java', version: '1.6'
-      }
-    }
-  }
+  sourceSets.main.java.srcDir 'ejbModule' //to match NWDS
+  sourceSets.test.java.srcDir 'test'
 }
 
 project(':multi-project-util') {
   //if java plugin is not applied to all subprojects above,
   //make sure to do so here. all dependent project of nw-web and nw-ejb projects
   //must have the java plugin applied due to some internal gradle requirements
+
   //apply plugin: 'java'
 
   //we'll leave sourceSets as defaults (maven convention)
   //feel free to change for your project by uncommenting the following
   //sourceSets.main.java.srcDir 'src' //to match eclipse/NWDS defaults
+}
+
+subprojects {
+
+  //This demonstrates adding dependencies after the plugins were added.
+  // dependencies {
+  //
+  // }
+
+  dependencies {
+
+    //Example of provided sap libs. See 'propdeps' for more info on the 'provided' configuration
+    if (project.configurations.findByName('providedCompile')) {
+      //use providedCompile if possible. Because the standard war task/plugin
+      //does not know about 'provided' so it won't get excluded.
+      //providedCompile('com.sap.nw:sap.com-tc-logging-java-impl:7.+')
+      providedCompile('com.sap.odata:com.sap.core.odata.api:0.7.0') //simulate nw lib
+    }
+    else {
+      //i.e. util/java project
+      //'provided' is non-transitive, so it won't get added to a war which
+      //depends on the util/java project
+
+      //provided('com.sap.nw:sap.com-tc-logging-java-impl:7.+')
+      provided('com.sap.odata:com.sap.core.odata.api:0.7.0') //simulate nw lib
+    }
+  }
+
+  //This demonstrates a way to add some hooks for checking when a project has a plugin.
+  //Useful for when you have many web or ejb projects in one build script
+  //There are other ways to achieve the same, but this is just an example.
+
+  //Note: 'all' executes the given action against all objects in the
+  //plugins collection and any objects subsequently added to the collection.
+  plugins.all { plugin ->
+    //println("plugin: " + plugin.class.simpleName + " added to " + project.name)
+    if (plugin instanceof WarPlugin) {
+      project.apply plugin: 'eclipse-wtp'
+      project.eclipse {
+        wtp {
+          facet {
+            facet name: 'jst.web', version: '2.5'
+            facet name: 'java', version: '1.6'
+          }
+          component {
+            resource sourcePath: '/WebContent', deployPath: '/'
+          }
+        }
+      }
+      project.war {
+        archiveName = project.name + '.war' //no version to match NWDS. good idea or bad?
+        webXml = project.file('WebContent/WEB-INF/web.xml')
+        destinationDir = rootProject.file('dist')
+        rootSpec.eachFile {
+          println(" +> $it.name")
+        }
+      }
+    }
+    else if (plugin.class.name.contains('EjbPlugin')) {
+      project.apply plugin: 'eclipse-wtp'
+      project.eclipse {
+        wtp {
+          facet {
+            facet name: 'jst.ejb', version: '3.0'
+            facet name: 'java', version: '1.6'
+          }
+        }
+      }
+    }
+    else if (plugin.class.name.contains('NwEarPlugin')) {
+      project.nwear {
+        archiveName = project.name + '.'  + extension
+        destinationDir = rootProject.file('dist')
+        rootSpec.eachFile {
+          println(" +> $it.name")
+        }
+      }
+    }
+  }
+
 }

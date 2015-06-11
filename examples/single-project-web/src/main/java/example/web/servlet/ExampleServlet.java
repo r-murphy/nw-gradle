@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import example.util.ExampleUtil;
+import org.apache.commons.lang3.math.NumberUtils;
 
 /**
  * Servlet implementation class ExampleServlet
@@ -26,7 +26,7 @@ public class ExampleServlet extends HttpServlet {
    * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
    */
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    response.getWriter().println("1 + 1 = " + ExampleUtil.add(1, 1));
+    response.getWriter().println("The biggest number of 1, 2 and 3 is " + NumberUtils.max(1, 2, 3));
   }
 
   /**

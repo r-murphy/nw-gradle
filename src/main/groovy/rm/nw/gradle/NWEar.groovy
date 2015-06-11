@@ -56,7 +56,7 @@ class NWEar extends Ear {
 	 */
 	NWEar() {
 		mainSpec.eachFile { FileCopyDetails details ->
-			println('---'+details.getPath())
+			//println('---'+details.getPath())
 			if (this.sapManifest && details.name.equalsIgnoreCase(this.sapManifest.fileName)) {
 				//SAP_MANIFEST.MF already exists in app dir. Don't generate.
 				this.sapManifest = null
