@@ -33,8 +33,14 @@ buildscript {
 
 ### NW EAR Plugin
 The Ear plugin creates a NetWeaver sda/ear file, with sda-dd.xml and SAP_MANIFEST.MF files.
+The plugin is typically not used directly, although it can be. Instead, it's typically used via the NW WEb or NW EJB plugins.
 
-The plugin is typically not used directly. Instead, it's typically used via the NW WEb or NW EJB plugins.
+```groovy
+project(:MyEarPrj) {
+  apply plugin: 'nw-ear'
+  ...
+}
+```
 
 The plugin provides the `nwear` task and a corresponding `nwear` configuration. The configuration inherits from the standard EAR convention so it provides all the same configuration options ([https://docs.gradle.org/current/dsl/org.gradle.plugins.ear.Ear.html](https://docs.gradle.org/current/dsl/org.gradle.plugins.ear.Ear.html)).
 
@@ -63,16 +69,14 @@ nwear {
 ```
 
 ### NW Web Plugin
-The NW Web plugin is used on a web project to create a war file wrapped in a NW sda/ear file. There will be a one-to-one relationship between war and ear, which mimics NWDS deployment.
+The NW Web plugin is used on a web project to create a war file wrapped in a NW sda/ear file. There will be a one-to-one relationship between war and ear, which mimics NWDS deployment. The NW Web plugin will automatically apply the NW EAR plugin, as well as the standard War and Java Plugins.
 
 ```groovy
 project(:MyWebPrj) {
-  apply plugin: 'rm.nw.gradle.web'
+  apply plugin: 'nw-web'
   ...
 }
 ```
-
-The NW Web plugin will automatically apply the NW EAR plugin, as well as the standard War Plugin, and also the Java Plugin indirectly.
 
 ** Key Tasks **
 - war (from War Plugin)
@@ -104,16 +108,14 @@ war {
 ### NW EJB Plugin
 WARNING: Not working. Doesn't generate a proper SAP_MANIFEST.MF yet.
 
-The NW Web plugin is used on a NW EJB project, such as adapter modules. There will be a one-to-one relationship between ejb project and ear, which mimics NWDS deployment.
+The NW Web plugin is used on a NW EJB project, such as adapter modules. There will be a one-to-one relationship between ejb project and ear, which mimics NWDS deployment. The NW Web plugin will automatically apply the NW EAR plugin, as well as the standard Java Plugin.
 
 ```groovy
 project(:MyModulePrj) {
-  apply plugin: 'rm.nw.gradle.ejb'
+  apply plugin: 'nw-ejb'
   ...
 }
 ```
-
-The NW Web plugin will automatically apply the NW EAR plugin, as well as the standard War Plugin, and also the Java Plugin indirectly.
 
 ## Deployment
 Deployment is not handled by these plugins. Maybe in the future. Either deploy via the antique NWDS, via command line on the NetWeaver server, or through other J2EE deployment tools. Personally, I use a customized version of the deployment folder and tools from the NetWeaver server, but NetWeaver should (might?) support any JSR 88 deployment tool (deploytool, ant, Cargo).
