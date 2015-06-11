@@ -13,8 +13,6 @@ import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.internal.reflect.Instantiator;
 
-import rm.nw.gradle.NWEar;
-
 
 /**
  * NWWebPlugin class.
@@ -31,17 +29,17 @@ public class NWWebPlugin extends NWEarPlugin {
 
   @Override
   public void apply(final Project project) {
-    //System.out.println("------Applying NWWebPlugin to " + project.getName());
+    //project.getLogger().info("{}: Applying NWWebPlugin plugin", project);
     super.apply(project);
-
     project.getPlugins().apply(WarPlugin.class);
-
+    
     NWEar earTask = super.getEarTask();
     Task warTask = project.getTasks().findByName("war");
     earTask.dependsOn(warTask);
 
-    //defer adding the war name to the 'from' list
-    //since the build.gradle may change it still
+    //Action to copy the war file into the ear file.
+    //Use a beforeCopy action to defer adding the war name
+    //to the copy 'from' list in case build.gradle changes the name
     Action<NWEar> beforeCopy = new Action<NWEar>() {
       @Override
       public void execute(NWEar earTask) {
@@ -49,7 +47,7 @@ public class NWWebPlugin extends NWEarPlugin {
         Task warTask = earTask.getProject().getTasks().getByName("war");
         if (warTask instanceof AbstractArchiveTask) {
           AbstractArchiveTask archiveTask = (AbstractArchiveTask)warTask;
-          System.out.println("from : " + project.file(archiveTask.getArchivePath()));
+          //System.out.println("from : " + project.file(archiveTask.getArchivePath()));
           earTask.from(project.file(archiveTask.getArchivePath()));
         }
       }

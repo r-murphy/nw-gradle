@@ -18,7 +18,7 @@ import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.internal.reflect.Instantiator;
 
 import rm.nw.gradle.NWEar;
-import rm.nw.gradle.util.ClasspathUtil;
+import rm.nw.gradle.util.DependenciesUtil;
 
 /**
  * NWWebPlugin class.
@@ -37,7 +37,7 @@ public class NWEjbPlugin extends NWEarPlugin {
     project.getPlugins().apply(JavaPlugin.class);
     super.apply(project);
     NWEar earTask = super.getEarTask();
-    ClasspathUtil.configureProvidedConfigurations(project);
+    DependenciesUtil.configureProvidedConfigurations(project);
     configureJarTaskDependency(project, earTask);
     configureDependencyJarFileSources(project, earTask);
   }
@@ -83,7 +83,7 @@ public class NWEjbPlugin extends NWEarPlugin {
         task.dependsOn(new Callable<Object>() {
           public Object call() throws Exception {
             //System.out.println("-------NWEar.dependsOn.execute()----------------");
-            Set<File> jars = ClasspathUtil.getCompileClasspathWithoutProvidedFiles(project);
+            Set<File> jars = DependenciesUtil.getCompileFilesMinusProvided(project);
             task.from(jars);
             return null;
           }

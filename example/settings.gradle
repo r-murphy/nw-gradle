@@ -1,1 +1,1 @@
-include 'util-proj', 'ejb-proj', 'web-proj'
+include 'ex-util-proj', 'ex-ejb-proj', 'ex-web-proj'

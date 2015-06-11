@@ -1,21 +1,116 @@
+allprojects {
+  group = 'rm.examples'
+  buildDir = '.build'
+  version = '0.0.1'
 
-group = 'rm.examples'
-buildDir = '.build'
+  repositories {
+    mavenLocal()
+    mavenCentral()
+  }
+}
 
 buildscript {
   repositories {
     mavenLocal()
+    mavenCentral()
+    maven { url 'http://repo.spring.io/plugins-release' } //for propdeps
   }
   dependencies {
-    classpath(group: 'rm.tools', name: 'nw-gradle', version: '2.3+')
-    classpath('org.springframework.build.gradle:propdeps-plugin:0.0.6')
+    classpath(group: 'rm.tools', name: 'nw-gradle', version: '2.+')
+    classpath('org.springframework.build.gradle:propdeps-plugin:0.0.+')
   }
 }
 
+/**
+propdeps?
+Because we don't want sap jar files packaged into our archive files, we want to use a 'provided' dependency configuration.
+Although gradle does not provide this, except for providedCompile on war projects.
+So we can either make a similar configuration outselves, or have propdeps do it for us.
+
+The nw-* plugins support filtering dependencies from provided, providedCompile and providedRuntime.
+
+The nw-ejb plugin also adds a providedRuntime dependency configuration to its own project, but not to
+nested project dependencies.
+
+**/
+
 subprojects {
+  apply plugin: 'propdeps'
   apply plugin: 'eclipse'
+  apply plugin: 'propdeps-eclipse' //this one actually applies propdeps and eclipse
+
+  //nw-web and nw-ejb will apply the java plugin
+  //but we need it here if we want to add dependencies up here
+  //alternatively, add the common dependencies below
+  apply plugin: 'java'
+  jar {
+    archiveName = project.name + '.jar' //no version to match NWDS. good idea or bad?
+  }
+
+  dependencies {
+    testCompile 'junit:junit:4.+'
+
+    //Example of provided sap lib. See 'propdeps' for more info on the provided configuration
+    //provided(group: 'com.sap.nw', name: 'sap.com-tc-logging-java-impl', version: '7.+')
+
+    //we'll use commons-io to simulate an SAP dependency used by all projects
+    //normally you'd have this as compile resource if you really need it
+    provided('commons-io:commons-io:1.4')
+  }
 }
 
-project(':web-proj') {
+project(':ex-web-proj') {
   apply plugin: 'nw-web'
+  apply plugin: 'eclipse-wtp'
+  dependencies {
+    compile(project(':ex-util-proj'))
+    providedCompile('javax.servlet:servlet-api:2.5', 'javax.servlet:jstl:1.1.2')
+  }
+  eclipse {
+    wtp {
+      facet {
+        facet name: 'jst.web', version: '2.5'
+        facet name: 'java', version: '1.6'
+      }
+      component {
+        resource sourcePath: '/WebContent', deployPath: '/'
+      }
+    }
+  }
+  war {
+    archiveName = project.name + '.war' //no version to match NWDS. good idea or bad?
+  }
+
+  //we'll leave sourceSets as defaults (maven convention)
+  //feel free to change for your project by uncommenting the following
+  //sourceSets.main.java.srcDir 'src' //to match eclipse/NWDS defaults
+}
+
+project(':ex-ejb-proj') {
+  apply plugin: 'nw-ejb'
+  apply plugin: 'eclipse-wtp'
+  sourceSets.main.java.srcDir 'ejbModule' //to match NWDS
+  sourceSets.test.java.srcDir 'test'
+  dependencies {
+    compile(project(':ex-util-proj'))
+  }
+  eclipse {
+    wtp {
+      facet {
+        facet name: 'jst.ejb', version: '3.0'
+        facet name: 'java', version: '1.6'
+      }
+    }
+  }
+}
+
+project(':ex-util-proj') {
+  //if java plugin is not applied to all subprojects above,
+  //make sure to do so here. all dependent project of nw-web and nw-ejb projects
+  //must have the java plugin applied due to some internal gradle requirements
+  //apply plugin: 'java'
+
+  //we'll leave sourceSets as defaults (maven convention)
+  //feel free to change for your project by uncommenting the following
+  //sourceSets.main.java.srcDir 'src' //to match eclipse/NWDS defaults
 }
