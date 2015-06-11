@@ -1,0 +1,21 @@
+
+group = 'rm.examples'
+buildDir = '.build'
+
+buildscript {
+  repositories {
+    mavenLocal()
+  }
+  dependencies {
+    classpath(group: 'com.barrowts.tools.nw', name: 'nw-gradle', version: '2.3+')
+    classpath('org.springframework.build.gradle:propdeps-plugin:0.0.6')
+  }
+}
+
+subprojects {
+  apply plugin: 'eclipse'
+}
+
+project(':web-proj') {
+  apply plugin: ''
+}
