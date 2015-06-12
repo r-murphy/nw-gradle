@@ -42,18 +42,24 @@ subprojects {
   //but we need it here if we want to add dependencies up here
   //alternatively, add the common dependencies below
   apply plugin: 'java'
+  compileJava {
+    options.compilerArgs << '-nowarn'
+    sourceCompatibility = JavaVersion.VERSION_1_6
+    targetCompatibility = JavaVersion.VERSION_1_6
+    //options.compilerArgs << '-XDignore.symbol.file'
+  }
   jar {
     archiveName = project.name + '.jar' //no version to match NWDS. good idea or bad?
     rootSpec.eachFile {
       println(" +> $it.name")
     }
   }
-
   dependencies {
     //we can list common cross-project dependencies here
     //but avoid using provided or providedCompile until after
     //the nw-* plgins are added, so we use the right one
-    testCompile 'junit:junit:4.+'
+    testCompile('junit:junit:4.+')
+    compile('org.apache.commons:commons-lang3:3.4')
   }
 }
 
@@ -62,7 +68,6 @@ project(':multi-project-web') {
   apply plugin: 'eclipse-wtp'
   dependencies {
     compile(project(':multi-project-util'))
-    providedCompile('javax.servlet:servlet-api:2.5', 'javax.servlet:jstl:1.1.2')
   }
   //we'll leave sourceSets as defaults (maven convention)
   //feel free to change for your project by uncommenting the following
@@ -73,6 +78,7 @@ project(':multi-project-ejb') {
   apply plugin: 'nw-ejb'
   dependencies {
     compile(project(':multi-project-util'))
+    // providedCompile 'javax.ejb:ejb-api:3.0'
   }
   sourceSets.main.java.srcDir 'ejbModule' //to match NWDS
   sourceSets.test.java.srcDir 'test'
@@ -93,9 +99,6 @@ project(':multi-project-util') {
 subprojects {
 
   //This demonstrates adding dependencies after the plugins were added.
-  // dependencies {
-  //
-  // }
 
   dependencies {
 
@@ -116,7 +119,7 @@ subprojects {
     }
   }
 
-  //This demonstrates a way to add some hooks for checking when a project has a plugin.
+  //The following demonstrates a way to add some hooks for checking when a project has a plugin.
   //Useful for when you have many web or ejb projects in one build script
   //There are other ways to achieve the same, but this is just an example.
 
@@ -126,6 +129,9 @@ subprojects {
     //println("plugin: " + plugin.class.simpleName + " added to " + project.name)
     if (plugin instanceof WarPlugin) {
       project.apply plugin: 'eclipse-wtp'
+      project.dependencies {
+        providedCompile('javax.servlet:servlet-api:2.5', 'javax.servlet:jstl:1.1.2')
+      }
       project.eclipse {
         wtp {
           facet {
@@ -148,6 +154,9 @@ subprojects {
     }
     else if (plugin.class.name.contains('EjbPlugin')) {
       project.apply plugin: 'eclipse-wtp'
+      project.dependencies {
+        providedCompile 'javax.ejb:ejb-api:3.0'
+      }
       project.eclipse {
         wtp {
           facet {
@@ -158,9 +167,18 @@ subprojects {
       }
     }
     else if (plugin.class.name.contains('NwEarPlugin')) {
-      project.nwear {
+      nwear {
+        //everything here is optional, just as examples
+        def vendor = 'rm'
         archiveName = project.name + '.'  + extension
         destinationDir = rootProject.file('dist')
+        manifest {
+          attributes("Implementation-Vendor-Id": vendor)
+        }
+        sapManifest {
+          attributes("keyvendor": vendor)
+        }
+        exclude 'application.xml'
         rootSpec.eachFile {
           println(" +> $it.name")
         }

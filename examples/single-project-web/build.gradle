@@ -25,8 +25,6 @@ dependencies {
   testCompile('junit:junit:4.+')
   providedCompile('javax.servlet:servlet-api:2.5', 'javax.servlet:jstl:1.1.2')
   //included in the war
-  compile('org.apache.commons:commons-math3:3.5')
-  compile('commons-io:commons-io:1.4')
   compile('org.apache.commons:commons-lang3:3.4')
 }
 eclipse {
@@ -40,17 +38,32 @@ eclipse {
     }
   }
 }
+compileJava {
+  options.compilerArgs << '-nowarn'
+  sourceCompatibility = JavaVersion.VERSION_1_6
+  targetCompatibility = JavaVersion.VERSION_1_6
+  //options.compilerArgs << '-XDignore.symbol.file'
+}
 war {
-  archiveName = project.name + '.war' //no version to match NWDS. good idea or bad?
   webXml = project.file('WebContent/WEB-INF/web.xml')
+  archiveName = project.name + '.war' //no version to match NWDS. good idea or bad?
   destinationDir = rootProject.file('dist')
   rootSpec.eachFile {
     println(" +> $it.name")
   }
 }
 nwear {
+  //everything here is optional, just as examples
+  def vendor = 'rm'
   archiveName = project.name + '.'  + extension
   destinationDir = rootProject.file('dist')
+  manifest {
+    attributes("Implementation-Vendor-Id": vendor)
+  }
+  sapManifest {
+    attributes("keyvendor": vendor)
+  }
+  exclude 'application.xml'
   rootSpec.eachFile {
     println(" +> $it.name")
   }
