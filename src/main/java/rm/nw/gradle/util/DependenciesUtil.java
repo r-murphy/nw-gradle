@@ -20,7 +20,7 @@ public class DependenciesUtil {
 
   /**
    * Setup the the 'providedCompile' and 'providedRuntime' configurations, just like War.
-   * TODO See if we can recursively get all the dependent projects and apply it to them too. 
+   * TODO See if we can recursively get all the dependent projects and apply it to them too.
    * But it would have to be a future action.
    */
   public static void configureProvidedConfigurations(final Project project) {
@@ -28,20 +28,20 @@ public class DependenciesUtil {
     Configuration provideCompileConfiguration = configurationContainer.findByName(WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME);
     if (provideCompileConfiguration==null) {
       provideCompileConfiguration = configurationContainer.create(WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME)
-          .setVisible(false)
-          .setDescription("Additional compile classpath for libraries that should not be part of the archive.");
+                                    .setVisible(false)
+                                    .setDescription("Additional compile classpath for libraries that should not be part of the archive.");
       configurationContainer.getByName(JavaPlugin.COMPILE_CONFIGURATION_NAME).extendsFrom(provideCompileConfiguration);
     }
     Configuration provideRuntimeConfiguration = configurationContainer.findByName(WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME);
     if (provideRuntimeConfiguration==null) {
       provideRuntimeConfiguration = configurationContainer.create(WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME)
-          .setVisible(false)
-          .extendsFrom(provideCompileConfiguration)
-          .setDescription("Additional runtime classpath for libraries that should not be part of the archive.");
+                                    .setVisible(false)
+                                    .extendsFrom(provideCompileConfiguration)
+                                    .setDescription("Additional runtime classpath for libraries that should not be part of the archive.");
       configurationContainer.getByName(JavaPlugin.RUNTIME_CONFIGURATION_NAME).extendsFrom(provideRuntimeConfiguration);
     }
   }
-  
+
   /**
    * 'compile' (dependencies and sourceSet) minus ('providedCompile' and 'provided')
    */
@@ -50,10 +50,10 @@ public class DependenciesUtil {
     files.removeAll(getAllProvidedFilesRecursively(project));
     return files;
   }
-  
+
   private static FileCollection getCompileClasspath(final Project project) {
     return getSourceSet(project, SourceSet.MAIN_SOURCE_SET_NAME)
-        .getCompileClasspath();
+           .getCompileClasspath();
   }
 
   /**
@@ -75,7 +75,7 @@ public class DependenciesUtil {
     }
     return files;
   }
-  
+
   /**
    * Helper to get project dependent, optionally recursively.
    */
@@ -97,7 +97,7 @@ public class DependenciesUtil {
     }
     return result;
   }
-  
+
   /**
    * Helper to get direct project type dependencies
    */
@@ -106,7 +106,7 @@ public class DependenciesUtil {
            .getByName(JavaPlugin.RUNTIME_CONFIGURATION_NAME)
            .getAllDependencies().withType(ProjectDependency.class);
   }
-  
+
   /**
    * Helper to get all the provided, providedRuntime, and provdedCompile files (jars)
    * from a project. non-recursively
@@ -118,7 +118,7 @@ public class DependenciesUtil {
     set.addAll(getConfigurationFiles(project, WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME));
     return set;
   }
-  
+
   /**
    * Helper to get the configuration files by name, and provide an empty collection if nothing was found.
    */
@@ -132,47 +132,47 @@ public class DependenciesUtil {
       return Collections.emptySet();
     }
   }
-  
-///**
-// * 'runtime' (dependencies and sourceSet) minus 'providedRuntime'
-// */
-//private static FileCollection getRuntimeClasspathWithoutProvided(final Project project) {
-//  return getRuntimeClasspath(project).minus(getProvidedRuntimeClasspath(project));
-//}
 
-//    public static void getOwnMainSources(final Project project) {
-//        SourceSet mainSet = project.getConvention().getPlugin(JavaPluginConvention.class)
-//            .getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-//        System.out.println("MainSet Sources: " + mainSet.getAllSource().getFiles());
-//        System.out.println("MainSet Java: " + mainSet.getAllJava().getFiles());
-//        System.out.println("MainSet Compile CP: " + mainSet.getCompileClasspath().getFiles());
-//    }
+  ///**
+  // * 'runtime' (dependencies and sourceSet) minus 'providedRuntime'
+  // */
+  //private static FileCollection getRuntimeClasspathWithoutProvided(final Project project) {
+  //  return getRuntimeClasspath(project).minus(getProvidedRuntimeClasspath(project));
+  //}
 
-//  private static FileCollection getRuntimeClasspath(final Project project) {
-//    return getSourceSet(project, SourceSet.MAIN_SOURCE_SET_NAME)
-//        .getRuntimeClasspath();
-//  }
+  //    public static void getOwnMainSources(final Project project) {
+  //        SourceSet mainSet = project.getConvention().getPlugin(JavaPluginConvention.class)
+  //            .getSourceSets().getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+  //        System.out.println("MainSet Sources: " + mainSet.getAllSource().getFiles());
+  //        System.out.println("MainSet Java: " + mainSet.getAllJava().getFiles());
+  //        System.out.println("MainSet Compile CP: " + mainSet.getCompileClasspath().getFiles());
+  //    }
 
-//  /**
-//   * Get the 'providedRuntime' configuration of the specified project.
-//   */
-//  private static FileCollection getProvidedRuntimeClasspath(final Project project) {
-//    return getConfigurationCollection(project, WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME);
-//  }
+  //  private static FileCollection getRuntimeClasspath(final Project project) {
+  //    return getSourceSet(project, SourceSet.MAIN_SOURCE_SET_NAME)
+  //        .getRuntimeClasspath();
+  //  }
 
-//  /**
-//   * Get the 'providedCompile' configuration of the specified project.
-//   */
-//  private static FileCollection getProvidedCompileCollection(final Project project) {
-//    return getConfigurationCollection(project, WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME);
-//  }
+  //  /**
+  //   * Get the 'providedRuntime' configuration of the specified project.
+  //   */
+  //  private static FileCollection getProvidedRuntimeClasspath(final Project project) {
+  //    return getConfigurationCollection(project, WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME);
+  //  }
 
-//  /**
-//   * Helper to get the configuration by name, and provide an empty collection if nothing was found.
-//   */
-//  private static FileCollection getConfigurationCollection(final Project project, final String name) {
-//    Configuration configuration = project.getConfigurations().findByName(name);
-//    return configuration != null ? configuration : EmptyFileCollection.getInstance();
-//  }
+  //  /**
+  //   * Get the 'providedCompile' configuration of the specified project.
+  //   */
+  //  private static FileCollection getProvidedCompileCollection(final Project project) {
+  //    return getConfigurationCollection(project, WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME);
+  //  }
+
+  //  /**
+  //   * Helper to get the configuration by name, and provide an empty collection if nothing was found.
+  //   */
+  //  private static FileCollection getConfigurationCollection(final Project project, final String name) {
+  //    Configuration configuration = project.getConfigurations().findByName(name);
+  //    return configuration != null ? configuration : EmptyFileCollection.getInstance();
+  //  }
 
 }

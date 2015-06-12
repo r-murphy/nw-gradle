@@ -32,7 +32,7 @@ public class NWWebPlugin extends NWEarPlugin {
     //project.getLogger().info("{}: Applying NWWebPlugin plugin", project);
     super.apply(project);
     project.getPlugins().apply(WarPlugin.class);
-    
+
     NWEar earTask = super.getEarTask();
     Task warTask = project.getTasks().findByName("war");
     earTask.dependsOn(warTask);

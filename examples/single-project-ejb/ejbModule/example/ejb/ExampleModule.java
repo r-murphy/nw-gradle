@@ -10,12 +10,12 @@ import org.apache.commons.lang3.math.NumberUtils;
 @Stateless
 public class ExampleModule implements ExampleModuleLocal {
 
-    public ExampleModule() {        
-    }
+  public ExampleModule() {
+  }
 
-    @Override
-    public int max(int... numbers) {
-      return NumberUtils.max(numbers);
-    }
-    
+  @Override
+  public int max(int ... numbers) {
+    return NumberUtils.max(numbers);
+  }
+
 }

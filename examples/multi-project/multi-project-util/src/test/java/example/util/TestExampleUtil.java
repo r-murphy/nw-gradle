@@ -12,10 +12,10 @@ public class TestExampleUtil {
   public void testPositive() {
     Assert.assertEquals(2, ExampleUtil.add(1, 1));
   }
-  
+
   @Test
   public void testNegative() {
     Assert.assertEquals(-1, ExampleUtil.add(1, -2));
   }
-  
+
 }

@@ -5,6 +5,6 @@ import javax.ejb.Local;
 @Local
 public interface ExampleModuleLocal {
 
-  public int max(int...numbers);
-  
+  public int max(int ... numbers);
+
 }
