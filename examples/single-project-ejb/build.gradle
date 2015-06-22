@@ -4,14 +4,11 @@ version = '0.0.1'
 
 buildscript {
   repositories {
-    flatDir {
-        dirs '../../.build/libs'
-    }
-    //mavenLocal() //use this normally
-    mavenCentral()
+    mavenLocal() //use this normally
+    mavenCentral() //I'll publish here later
   }
   dependencies {
-    classpath(group: 'rm.tools', name: 'nw-gradle', version: '2.+')
+    classpath(group: 'rm.tools', name: 'nw-gradle', version: '1.+')
   }
 }
 

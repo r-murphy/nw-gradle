@@ -12,11 +12,11 @@ allprojects {
 buildscript {
   repositories {
     mavenLocal()
-    mavenCentral()
+    mavenCentral() //I'll publish here later
     maven { url 'http://repo.spring.io/plugins-release' } //for propdeps
   }
   dependencies {
-    classpath(group: 'rm.tools', name: 'nw-gradle', version: '2.+')
+    classpath(group: 'rm.tools', name: 'nw-gradle', version: '1.+')
     classpath('org.springframework.build.gradle:propdeps-plugin:0.0.+')
   }
 }

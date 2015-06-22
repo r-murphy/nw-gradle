@@ -5,10 +5,10 @@ version = '0.0.1'
 buildscript {
   repositories {
     mavenLocal()
-    mavenCentral()
+    mavenCentral() //I'll publish here later
   }
   dependencies {
-    classpath(group: 'rm.tools', name: 'nw-gradle', version: '2.+')
+    classpath(group: 'rm.tools', name: 'nw-gradle', version: '1.+')
   }
 }
 
