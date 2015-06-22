@@ -1,5 +1,6 @@
 package rm.nw.gradle.descriptor;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
@@ -14,28 +15,40 @@ import org.gradle.api.java.archives.Attributes;
 import org.gradle.api.java.archives.ManifestException;
 import org.gradle.api.java.archives.internal.DefaultManifest;
 
-public class SAPManifest extends DefaultManifest {
+import rm.nw.gradle.descriptor.helpers.ApplicationJ2eeEngineHelper;
+import rm.nw.gradle.descriptor.helpers.ComponentElementHelper;
+import rm.nw.gradle.descriptor.helpers.ManifestStringSplitter;
 
+public class SAPManifest extends DefaultManifest {
+  
   public static final String MANIFEST_DATE_FORMAT = "yyyy.MM.dd.HH.mm.ss";
 
   private String fileName = "SAP_MANIFEST.MF";
-
+  
+  private File applicationJ2eeEngineFile; //file path
+  
+  private boolean includeDependencies = false;
+  
   @Inject
   public SAPManifest(FileResolver fileResolver) {
     super(fileResolver);
-    addSapDefaults(getAttributes());
+    addSapDefaults();
   }
 
   @Inject
   public SAPManifest(FileResolver fileResolver, Project project) {
     super(fileResolver);
-    addSapDefaults(getAttributes());
+    addSapDefaults();
     updateProjectDetails(project);
   }
 
   @Inject
   public SAPManifest(Object manifestPath, FileResolver fileResolver) {
     super(manifestPath, fileResolver);
+  }
+  
+  public void setIncludeDependencies(boolean includeDependencies) {
+    this.includeDependencies = includeDependencies;
   }
 
   public String getFileName() {
@@ -45,8 +58,13 @@ public class SAPManifest extends DefaultManifest {
   public void setFileName(String fileName) {
     this.fileName = fileName;
   }
+  
+  public void setApplicationJ2eeEngineFile(File applicationJ2eeEngineFile) {
+    this.applicationJ2eeEngineFile = applicationJ2eeEngineFile;
+  }
 
-  protected static void addSapDefaults(Attributes attributes) {
+  public void addSapDefaults() {
+    Attributes attributes = getAttributes();
     attributes.put("Ext-SDM-SDA-Comp-Version", "1");
     attributes.put("softwaretype", "J2EE");
     attributes.put("JarSAP-Standalone-Version", "20090803.1000");
@@ -59,6 +77,11 @@ public class SAPManifest extends DefaultManifest {
     attributes.put("keylocation", "localhost");
     attributes.put("keycounter", generateManifestDate());
     attributes.put("componentelement", "");     //placeholder in (ordered) LinkedHashMap
+    if (includeDependencies) {
+      //placeholders in (ordered) LinkedHashMap
+      attributes.put("dependencies", "");
+      attributes.put("dependencylist", "");
+    }
     attributes.put("JarSL-Version", "20100616.1800");
     attributes.put("compress", "true");
   }
@@ -83,6 +106,19 @@ public class SAPManifest extends DefaultManifest {
     }
 
     attributes.put("componentelement", ComponentElementHelper.generate(attributes));
+    
+    if (includeDependencies && applicationJ2eeEngineFile!=null) {
+      //deferred application-j2ee-engine.xml parse
+      final ApplicationJ2eeEngineHelper applicationJ2eeEngineHelper = new ApplicationJ2eeEngineHelper();
+      applicationJ2eeEngineHelper.setSourceFile(applicationJ2eeEngineFile).parse();
+      
+      String dependencies = applicationJ2eeEngineHelper.toDepenencies(null).toString();
+      attributes.put("dependencies", ManifestStringSplitter.splitIt(dependencies));
+      
+      String dependencyList = applicationJ2eeEngineHelper.toDepenencyList(null).toString();
+      attributes.put("dependencyList", ManifestStringSplitter.splitIt(dependencyList));
+    }
+    
     //System.out.println("SAPManifest.getEffectiveManifest() - attributes.get("componentelement"));
     return super.getEffectiveManifest();
   }

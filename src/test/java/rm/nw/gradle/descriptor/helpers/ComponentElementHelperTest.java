@@ -1,11 +1,10 @@
-package rm.nw.gradle.descriptor;
+package rm.nw.gradle.descriptor.helpers;
 
 import org.gradle.api.java.archives.Attributes;
-import org.gradle.api.java.archives.internal.DefaultAttributes;
 import org.junit.Test;
 
-import rm.nw.gradle.descriptor.ComponentElementHelper;
 import rm.nw.gradle.descriptor.SAPManifest;
+import rm.nw.gradle.descriptor.SAPManifestTest;
 
 
 public class ComponentElementHelperTest {
@@ -15,7 +14,7 @@ public class ComponentElementHelperTest {
     Attributes attributes = generateAttributes();
     String generated = ComponentElementHelper.generate(attributes);
     System.out.println(generated);
-    //Assert.assertEquals(EXPECTED, generated);
+//    Assert.assertEquals(EXPECTED, generated);
   }
 
   @Test
@@ -29,8 +28,8 @@ public class ComponentElementHelperTest {
   }
 
   private Attributes generateAttributes() {
-    Attributes attributes = new DefaultAttributes();
-    SAPManifest.addSapDefaults(attributes);
+    SAPManifest createSAPManifest = SAPManifestTest.createSAPManifest();
+    Attributes attributes = createSAPManifest.getAttributes();
     return attributes;
   }
 

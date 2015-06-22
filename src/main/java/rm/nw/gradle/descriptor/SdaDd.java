@@ -8,7 +8,11 @@ import org.gradle.api.UncheckedIOException;
 public class SdaDd {
 
   private String fileName = "sda-dd.xml";
-
+  
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
+  
   public String getFileName() {
     return fileName;
   }

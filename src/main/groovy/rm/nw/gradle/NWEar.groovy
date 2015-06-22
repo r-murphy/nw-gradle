@@ -49,19 +49,21 @@ class NWEar extends Ear {
 	 * such as NWWebPlugin specifying to load the war file.
 	 */
 	protected final def beforeCopyActions = []
+  
 	
 	/**
 	 * NWEar Constructor
 	 * Note to self: groovy will automatically call super()
 	 */
 	NWEar() {
+        //monitor all the files getting copied, to see if an SAP_MANIFEST.MF or sda-dd.xml are included
 		mainSpec.eachFile { FileCopyDetails details ->
 			//println('---'+details.getPath())
-			if (this.sapManifest && details.name.equalsIgnoreCase(this.sapManifest.fileName)) {
+			if (this.sapManifest && this.sapManifest.fileName.equalsIgnoreCase(details.name)) {
 				//SAP_MANIFEST.MF already exists in app dir. Don't generate.
 				this.sapManifest = null
 			}
-			else if (this.sdaDd && details.name.equals(this.sdaDd.fileName)) {
+			else if (this.sdaDd && this.sdaDd.fileName.equals(details.name)) {
 				//sda-dd.xml already exists in app dir. Don't generate.
 				this.sdaDd = null
 			}
@@ -69,12 +71,12 @@ class NWEar extends Ear {
 		
 		// create our own metaInf spec which runs after mainSpec's files
 		// Needs to be 'after' in order to see if SAP_MANIFEST.MF and sda-dd.xml already exist
-		def metaInf = mainSpec.addChild().into('META-INF')
+		def metaInfSpec = mainSpec.addChild().into('META-INF')
 		
-		metaInf.addChild().from {
+		metaInfSpec.addChild().from {
 			//println '***sm1: ' + this.getProject().getName();
 			MapFileTree temporarySource = new MapFileTree(getTemporaryDirFactory(), getFileSystem())
-			final SAPManifest sapManifest = sapManifest
+			final SAPManifest sapManifest = sapManifest //very important to store this local ref as final to avoid null pointer
 			if (sapManifest) {
 				//println '***sm2 add: ' + this.getProject().getName() + '~' + sapManifest.fileName
 				temporarySource.add(sapManifest.fileName, new Action<OutputStream>() {
@@ -88,9 +90,9 @@ class NWEar extends Ear {
 			return null
 		}
 		
-		metaInf.addChild().from {
+		metaInfSpec.addChild().from {
 			MapFileTree temporarySource = new MapFileTree(getTemporaryDirFactory(), getFileSystem())
-			final SdaDd sdaDd = sdaDd //very important to store this local ref to avoid null pointer
+			final SdaDd sdaDd = sdaDd //very important to store this local ref as final to avoid null pointer
 			if (this.sdaDd) {
 				//println 'no sda-dd.xml'
 				//println '***sda2 add: ' + this.getProject().getName() + '~' + sdaDd.fileName

@@ -1,0 +1,40 @@
+Manifest-Version: 1.0
+Ext-SDM-SDA-Comp-Version: 1
+softwaretype: J2EE
+JarSAP-Standalone-Version: 20090803.1000
+JarSAPProcessing-Version: 20090907.1000
+deployfile: sda-dd.xml
+archivetype: DC
+JarSAP-Version: 20090803.1000
+keyname: MappingTestEJBEAR
+keyvendor: sap.com
+keylocation: localhost
+keycounter: 2015.02.26.10.49.03
+componentelement: <componentelement  name="MappingTestEJBEAR" vendor="sap.com" component
+ type="DC" subsystem="NO_SUBSYS" location="localhost" counter="2015.02.
+ 26.10.49.03" deltaversion="F" updateversion="LB-20150226104905" compon
+ entprovider="SAP AG" archivetype="DC"/> 
+dependencies: <dependency  Implementation-Title="engine.security.facade" Implementat
+ ion-Vendor-Id="sap.com" /> <dependency  Implementation-Title="engine.j
+ 2ee14.facade" Implementation-Vendor-Id="sap.com" /> <dependency  Imple
+ mentation-Title="com.sap.aii.af.svc.facade" Implementation-Vendor-Id="
+ sap.com" /> <dependency  Implementation-Title="com.sap.aii.af.ifc.faca
+ de" Implementation-Vendor-Id="sap.com" /> <dependency  Implementation-
+ Title="com.sap.aii.af.lib.facade" Implementation-Vendor-Id="sap.com" /
+ > <dependency  Implementation-Title="com.sap.base.technology.facade" I
+ mplementation-Vendor-Id="sap.com" /> <dependency  Implementation-Title
+ ="com.sap.xi.mapping.api.lib" Implementation-Vendor-Id="sap.com" /> <d
+ ependency  Implementation-Title="com.sap.xi.mapping.svc" Implementatio
+ n-Vendor-Id="sap.com" /> 
+dependencylist: <dependency  keyname="engine.security.facade" keyvendor="sap.com" /> <
+ dependency  keyname="engine.j2ee14.facade" keyvendor="sap.com" /> <dep
+ endency  keyname="com.sap.aii.af.svc.facade" keyvendor="sap.com" /> <d
+ ependency  keyname="com.sap.aii.af.ifc.facade" keyvendor="sap.com" /> 
+ <dependency  keyname="com.sap.aii.af.lib.facade" keyvendor="sap.com" /
+ > <dependency  keyname="com.sap.base.technology.facade" keyvendor="sap
+ .com" /> <dependency  keyname="com.sap.xi.mapping.api.lib" keyvendor="
+ sap.com" /> <dependency  keyname="com.sap.xi.mapping.svc" keyvendor="s
+ ap.com" /> 
+JarSL-Version: 20100616.1800
+compress: true
+
