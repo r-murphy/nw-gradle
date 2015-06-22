@@ -27,6 +27,7 @@ import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.internal.ConventionMapping;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.internal.plugins.DefaultArtifactPublicationSet;
@@ -38,6 +39,7 @@ import org.gradle.internal.reflect.Instantiator;
 import org.gradle.plugins.ear.descriptor.DeploymentDescriptor;
 
 import rm.nw.gradle.descriptor.SAPManifest;
+import rm.nw.gradle.descriptor.SdaDD;
 
 /**
  * <p>
@@ -76,8 +78,9 @@ public class NWEarPlugin implements Plugin<Project> {
     wireEarTaskConventions(project, earPluginConvention);
     configureAppDirSources(project, earPluginConvention);
     configureDeploymentDescriptor(project, earPluginConvention);
-    configureSapManifest(project, earPluginConvention);
     configureManifest(project, earPluginConvention, earTask);
+    configureSapManifest(project, earPluginConvention);
+    
   }
 
   /**
@@ -144,7 +147,7 @@ public class NWEarPlugin implements Plugin<Project> {
   }
 
   /**
-   * Wire up the conventions.
+   * Wire up the conventions to the task
    */
   private void wireEarTaskConventions(final Project project, final NWEarPluginConvention earConvention) {
     project.getTasks().withType(NWEar.class, new Action<NWEar>() {
@@ -158,6 +161,16 @@ public class NWEarPlugin implements Plugin<Project> {
         task.getConventionMapping().map("sapManifest", new Callable<SAPManifest>() {
           public SAPManifest call() throws Exception { return earConvention.getSapManifest(); }
         });
+        
+        //for some reason, not able to use task mapping. trying this. works okay with 1 project.
+        task.setSdaDd(earConvention.getSdaDD());
+        
+//        ConventionMapping conventionMapping = task.getConventionMapping();
+//        System.out.println(conventionMapping.getClass());
+//        task.getExtensions().create("nwear", NwEarExtension.class);
+//        task.getConventionMapping().map("sdaDD", new Callable<SdaDD>() {
+//          public SdaDD call() throws Exception { return earConvention.getSdaDD(); }
+//        });
       }
     });
   }
