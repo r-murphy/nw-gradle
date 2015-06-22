@@ -188,12 +188,8 @@ Check out the example folder for a more in depth example of a multi-project buil
 
 ## Future Plans / TODO
 - More tests
-- Get EJB EARs working properly
 - Publishing to Maven Central
-- default web.xml path in nw-web
-- sda-dd.xml filename configuration
-- Login Modules
-- Resource Adapters
+- See Issues list for more
 - Maybe deployment
 
 ## Contributing
