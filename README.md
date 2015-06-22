@@ -42,7 +42,7 @@ buildscript {
 
 ### NW EAR Plugin
 The Ear plugin creates a NetWeaver sda/ear file, with sda-dd.xml and SAP_MANIFEST.MF files.
-The plugin is typically not used directly, although it can be. Instead, it's typically used via the NW WEb or NW EJB plugins (see below).
+The plugin is can either be used directly on an ear type project, or it can be used indirectly via the NW WEb or NW EJB plugins on their respective projets (see below).
 
 ```groovy
 project(:MyEarPrj) {
@@ -51,9 +51,15 @@ project(:MyEarPrj) {
 }
 ```
 
-The plugin provides the `nwear` task and a corresponding `nwear` configuration. The configuration inherits from the standard EAR convention so it provides all the same configuration options ([https://docs.gradle.org/current/dsl/org.gradle.plugins.ear.Ear.html](https://docs.gradle.org/current/dsl/org.gradle.plugins.ear.Ear.html)).
+The plugin provides the `nwear` task and a corresponding `nwear` configuration. The configuration inherits from the standard EAR convention so it provides all the same configuration options.
 
-Additionally, it provides a `sapManifest` closure on the convention to override the default SAP_MANIFEST.MF values. The sapManifest closure inherits from the standard manifest closure of the ear and jar configurations, so the same configuration applies.
+ * [Ear DSL](https://docs.gradle.org/current/dsl/org.gradle.plugins.ear.Ear.html).
+ * [EarPluginConvention](https://docs.gradle.org/current/dsl/org.gradle.plugins.ear.EarPluginConvention.html).
+
+
+The NWEar configuration changes the default value for appDirName from "src/main/application" to "EarContent", to be more in line with NWDS/eclipse folder convention. This can be modified in the project configuration.
+
+Additionally, it provides a `sapManifest` closure on the convention to override the default SAP_MANIFEST.MF values. The sapManifest closure inherits from the standard manifest closure, so the same configuration applies.
 
 **Example**
 
