@@ -26,7 +26,7 @@ buildscript {
 		mavenLocal()
 	}
 	dependencies {
-		classpath(group: 'rm.tools', name: 'nw-gradle', version: '2.+')
+		classpath(group: 'rm.tools', name: 'nw-gradle', version: '1.+')
 	}
 }
 ```
