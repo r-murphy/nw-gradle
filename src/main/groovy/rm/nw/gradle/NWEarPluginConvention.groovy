@@ -46,7 +46,7 @@ public class NWEarPluginConvention extends EarPluginConvention  {
 	}
 	
 	/**
-	 * Configures the SAP Manifest for this EAR arhive.
+	 * Configures the SAP Manifest for this EAR archive.
 	 * <p>The given closure is executed to configure the manifest. The {@link SAPManifest}
 	 * is passed to the closure as its delegate.</p>
 	 * 
@@ -54,13 +54,16 @@ public class NWEarPluginConvention extends EarPluginConvention  {
 	 * @return This.
 	 */
 	public NWEarPluginConvention sapManifest(Closure configureClosure) {
-		//println('!!!!!!!!!!!!NWEarPluginConvention.sapManifest Closure');
+//		println('!!!!!!!!!!!!NWEarPluginConvention.sapManifest Closure');
 		if (!sapManifest) {
+//            println('No sapManifest. creating one');
+    
 //			if (project!=null) {
 //				sapManifest = instantiator.newInstance(SAPManifest.class, fileResolver, project);
 //			}
 //			else {
 				sapManifest = instantiator.newInstance(SAPManifest.class, fileResolver);
+//                println('Created sapManifest:' + sapManifest);
 //			}
 		}
 		ConfigureUtil.configure(configureClosure, sapManifest)

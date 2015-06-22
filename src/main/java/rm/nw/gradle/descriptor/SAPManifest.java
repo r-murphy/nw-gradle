@@ -77,11 +77,8 @@ public class SAPManifest extends DefaultManifest {
     attributes.put("keylocation", "localhost");
     attributes.put("keycounter", generateManifestDate());
     attributes.put("componentelement", "");     //placeholder in (ordered) LinkedHashMap
-    if (includeDependencies) {
-      //placeholders in (ordered) LinkedHashMap
-      attributes.put("dependencies", "");
-      attributes.put("dependencylist", "");
-    }
+    attributes.put("dependencies", ""); //placeholder in (ordered) LinkedHashMap
+    attributes.put("dependencylist", ""); //placeholder in (ordered) LinkedHashMap
     attributes.put("JarSL-Version", "20100616.1800");
     attributes.put("compress", "true");
   }
@@ -107,6 +104,9 @@ public class SAPManifest extends DefaultManifest {
 
     attributes.put("componentelement", ComponentElementHelper.generate(attributes));
     
+    System.out.println("SAPManifest.getEffectiveManifest~includeDependencies:" +includeDependencies);
+    System.out.println("SAPManifest.getEffectiveManifest~applicationJ2eeEngineFile:" +applicationJ2eeEngineFile);
+    
     if (includeDependencies && applicationJ2eeEngineFile!=null) {
       //deferred application-j2ee-engine.xml parse
       final ApplicationJ2eeEngineHelper applicationJ2eeEngineHelper = new ApplicationJ2eeEngineHelper();
@@ -114,9 +114,15 @@ public class SAPManifest extends DefaultManifest {
       
       String dependencies = applicationJ2eeEngineHelper.toDepenencies(null).toString();
       attributes.put("dependencies", ManifestStringSplitter.splitIt(dependencies));
+      System.out.println(ManifestStringSplitter.splitIt(dependencies));
       
       String dependencyList = applicationJ2eeEngineHelper.toDepenencyList(null).toString();
       attributes.put("dependencyList", ManifestStringSplitter.splitIt(dependencyList));
+      System.out.println(ManifestStringSplitter.splitIt(dependencyList));
+    }
+    else {
+      attributes.remove("dependencies");
+      attributes.remove("dependencyList");
     }
     
     //System.out.println("SAPManifest.getEffectiveManifest() - attributes.get("componentelement"));

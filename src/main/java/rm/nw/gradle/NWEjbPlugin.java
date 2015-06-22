@@ -40,10 +40,18 @@ public class NWEjbPlugin extends NWEarPlugin {
     DependenciesUtil.configureProvidedConfigurations(project);
     configureJarTaskDependency(project, earTask);
     configureDependencyJarFileSources(project, earTask);
+    
+    //Tells SAPManifest to include the dependencies section. Needed for ejb ears, but not web.
+    //this is configuration time when they apply the plugin, so the user may still override it in build.gradle
+    //after applying the plugin
+    
+    System.out.println("earTask.getSapManifest():"+earTask.getSapManifest());
+    
+    earTask.getSapManifest().setIncludeDependencies(true);
   }
 
   /**
-   * NW EJB Ear files contain the jar. So tell gradle to build the jar first.
+   * NW EJB Ear files contain the jar. So tell gradle to build the jar first, and add it to the copyspec.
    */
   private void configureJarTaskDependency(final Project project, final NWEar earTask) {
     Task jarTask = project.getTasks().findByName("jar");
@@ -67,7 +75,8 @@ public class NWEjbPlugin extends NWEarPlugin {
   }
 
   /**
-   * Configures the Archive task source (jar files) to include in the archive.
+   * Configures which jar files to include in the archive.
+   * Based on the dependencies and sourceSets.
    *
    * Included files are:
    *  runtimeJars(includes providedJars) minus providedJars
@@ -91,5 +100,5 @@ public class NWEjbPlugin extends NWEarPlugin {
       }
     });
   }
-
+  
 }

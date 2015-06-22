@@ -18,6 +18,7 @@ package rm.nw.gradle
  */
 
 import org.gradle.api.Action
+
 import org.gradle.api.file.FileCopyDetails
 import org.gradle.api.internal.file.collections.FileTreeAdapter
 import org.gradle.api.internal.file.collections.MapFileTree
@@ -30,6 +31,13 @@ import rm.nw.gradle.descriptor.SdaDd
 /**
  * Assembles a NW EAR archive.
  * Similar to an EAR, but includes SAP_MANIFEST.MF and sda-dd.xml
+ * 
+ * The ordering of the task execution is important.
+ * - Run the before copy actions.
+ * - Perform the copy spec, keeping track of what files were copied.
+ * - Create the SAP_MANIFEST.MF, if it wasn't copied.
+ * - Create the sda-dd.xml (or simlilar0 if it wasn't copied.
+ * 
  */
 class NWEar extends Ear {
 	
@@ -57,8 +65,9 @@ class NWEar extends Ear {
 	 */
 	NWEar() {
         //monitor all the files getting copied, to see if an SAP_MANIFEST.MF or sda-dd.xml are included
+        //note that after those files are added automatically below to the MetaInfSpec, this closure still runs
 		mainSpec.eachFile { FileCopyDetails details ->
-			//println('---'+details.getPath())
+			println('---'+details.getPath())
 			if (this.sapManifest && this.sapManifest.fileName.equalsIgnoreCase(details.name)) {
 				//SAP_MANIFEST.MF already exists in app dir. Don't generate.
 				this.sapManifest = null
@@ -67,6 +76,14 @@ class NWEar extends Ear {
 				//sda-dd.xml already exists in app dir. Don't generate.
 				this.sdaDd = null
 			}
+            else if (details.name=='application-j2ee-engine.xml') {
+              println('---'+details.getPath())
+              println('---'+details.file)
+              sapManifest.applicationJ2eeEngineFile = details.file;
+            }
+//            else if (details.name == 'SAP_MANIFEST.MF') {
+//              
+//            }
 		}
 		
 		// create our own metaInf spec which runs after mainSpec's files

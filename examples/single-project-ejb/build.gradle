@@ -4,7 +4,10 @@ version = '0.0.1'
 
 buildscript {
   repositories {
-    mavenLocal()
+    flatDir {
+        dirs '../../.build/libs'
+    }
+    //mavenLocal() //use this normally
     mavenCentral()
   }
   dependencies {
@@ -65,6 +68,10 @@ nwear {
     println(" +> $it.name")
   }
 }
+
+//aliases.
+task('sda').dependsOn('nwear')
+task('ear').dependsOn('nwear')
 
 //we'll leave sourceSets as defaults (maven convention)
 //feel free to change for your project by uncommenting the following
