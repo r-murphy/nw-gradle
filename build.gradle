@@ -1,6 +1,6 @@
 
 group = 'rm.tools'
-version = '2.4.0' //major.minor matches tested gradle api
+version = '1.0.0'
 buildDir = '.build'
 
 //apply plugin: 'idea'

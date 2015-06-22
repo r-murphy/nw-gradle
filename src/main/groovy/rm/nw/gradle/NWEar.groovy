@@ -67,7 +67,7 @@ class NWEar extends Ear {
         //monitor all the files getting copied, to see if an SAP_MANIFEST.MF or sda-dd.xml are included
         //note that after those files are added automatically below to the MetaInfSpec, this closure still runs
 		mainSpec.eachFile { FileCopyDetails details ->
-			println('---'+details.getPath())
+			//println('---'+details.getPath())
 			if (this.sapManifest && this.sapManifest.fileName.equalsIgnoreCase(details.name)) {
 				//SAP_MANIFEST.MF already exists in app dir. Don't generate.
 				this.sapManifest = null
@@ -77,13 +77,8 @@ class NWEar extends Ear {
 				this.sdaDd = null
 			}
             else if (details.name=='application-j2ee-engine.xml') {
-              println('---'+details.getPath())
-              println('---'+details.file)
               sapManifest.applicationJ2eeEngineFile = details.file;
             }
-//            else if (details.name == 'SAP_MANIFEST.MF') {
-//              
-//            }
 		}
 		
 		// create our own metaInf spec which runs after mainSpec's files
