@@ -42,7 +42,7 @@ buildscript {
 
 ### NW EAR Plugin
 The Ear plugin creates a NetWeaver sda/ear file, with sda-dd.xml and SAP_MANIFEST.MF files.
-The plugin is can either be used directly on an ear type project, or it can be used indirectly via the NW WEb or NW EJB plugins on their respective projets (see below).
+The plugin can either be used directly on an ear type project, or it can be used indirectly via the NW Web or NW EJB plugins on their respective projects (see below).
 
 ```groovy
 project(:MyEarPrj) {
@@ -53,38 +53,45 @@ project(:MyEarPrj) {
 
 The plugin provides the `nwear` task and a corresponding `nwear` configuration. The configuration inherits from the standard EAR convention so it provides all the same configuration options.
 
- * [Ear DSL](https://docs.gradle.org/current/dsl/org.gradle.plugins.ear.Ear.html).
- * [EarPluginConvention](https://docs.gradle.org/current/dsl/org.gradle.plugins.ear.EarPluginConvention.html).
+References:
+
+ * [Ear DSL](https://docs.gradle.org/current/dsl/org.gradle.plugins.ear.Ear.html)
+ * [EarPluginConvention](https://docs.gradle.org/current/dsl/org.gradle.plugins.ear.EarPluginConvention.html)
 
 
 The NWEar configuration changes the default value for appDirName from "src/main/application" to "EarContent", to be more in line with NWDS/eclipse folder convention. This can be modified in the project configuration.
 
-Additionally, it provides a `sapManifest` closure on the convention to override the default SAP_MANIFEST.MF values. The sapManifest closure inherits from the standard manifest closure, so the same configuration applies.
+Additionally, it provides some additional configuration methods (closures).
+
+	* `sapManifest` closure on the convention to override the default SAP_MANIFEST.MF values. The sapManifest closure inherits from the standard manifest closure, so the same configuration applies (manifest is incubating in gradle so it's not document yet)
+	* 'sdaDD' closure to configure the SDA Deployment Descriptor file. Currently the only option is override the fileName value.
 
 **Example**
 
 ```groovy
 ext.vendor = 'me'
 nwear {
+	//standard ear configuration options
 	destinationDir = rootProject.file('dist')	# instead of within nested project
 	archiveName = project.name + '.ear'			# no version
 	manifest {
 		attributes("Implementation-Vendor-Id": vendor)
 	}
-	sapManifest {
-		attributes("keyvendor": vendor)
-	}
 	deploymentDescriptor {
 		version = 5
 	}
-	doLast {
-		println "---$archivePath"
+	//custom nw ear configuration options
+	sapManifest {
+		attributes("keyvendor": vendor)
+	}
+	sdaDD {
+		fileName = 'sda-dd.xml' //this is the default
 	}
 }
 ```
 
 ### NW Web Plugin
-The NW Web plugin is used on a web project to create a war file wrapped in a NW sda/ear file. There will be a one-to-one relationship between war and ear, when using the nwear task. The NW Web plugin will automatically apply the NW EAR plugin, as well as the standard War and Java Plugins.
+The NW Web plugin is used on a web project to create a war file wrapped in a NW sda/ear file. The NW Web plugin will automatically apply the NW EAR plugin, as well as the standard War and Java Plugins. There is one-to-one relationship between war and ear, when using the nwear task.
 
 ```groovy
 project(:MyWebPrj) {
@@ -101,7 +108,10 @@ project(:MyWebPrj) {
 
 Since it applies the NW EAR plugin, the project has the nwear configuration convention, as described above.
 
-And the plugin applies the standard war and java plugins, so all the same DSL configuration options apply. [https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.War.html](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.War.html) [https://docs.gradle.org/current/dsl/org.gradle.api.tasks.compile.JavaCompile.html](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.compile.JavaCompile.html)
+And the plugin applies the standard war and java plugins, so all the same DSL configuration options apply.
+
+ * [War DSL](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.bundling.War.html)
+ * [JavaCompile DSL](https://docs.gradle.org/current/dsl/org.gradle.api.tasks.compile.JavaCompile.html)
 
 **Example**
 
@@ -112,18 +122,16 @@ war {
 	webXml = project.file('WebContent/WEB-INF/web.xml')
 	destinationDir = rootProject.file('dist')
 	rootSpec.eachFile {
-	println("\t$it.name")
+		println("\t$it.name")
 	}
 	doLast {
-	println "---$archivePath"
+		println "---$archivePath"
 	}
 }
 ```
 
 ### NW EJB Plugin
-WARNING: Not working. Doesn't generate a proper SAP_MANIFEST.MF yet.
-
-The NW Web plugin is used on a NW EJB project, such as adapter modules. There will be a one-to-one relationship between ejb project and ear, which mimics NWDS deployment. The NW Web plugin will automatically apply the NW EAR plugin, as well as the standard Java Plugin.
+The NW Web plugin is used on a NW EJB project, such as adapter modules. The NW Web plugin will automatically apply the NW EAR plugin, as well as the standard Java Plugin. There will be a one-to-one relationship between ejb project and ear, which mimics NWDS deployment.
 
 ```groovy
 project(:MyModulePrj) {
@@ -147,7 +155,7 @@ Using Shell Scripts to Work with SDAs [http://help.sap.com/saphelp_nw74/helpdata
 ## Dealing with SAP Jar Dependencies
 Although technically out of scope of these plugins, many will wonder how to do a gradle build if your project depends on some SAP (jar) dependencies. There are a few solutions, depending on your preference and project structure.
 
-The first and simplest is to put all the SAP jars into a folder and just use a files or fileTree dependency. I've done this on many occasions and it works pretty well. Although I would recomend against storing the SAP jar files in source control in the same project as your code.
+The first and simplest is to put all the SAP jars into a folder and just use a files or fileTree dependency. I've done this on many occasions and it works pretty well. Although I would recommend against storing the SAP jar files in source control in the same project as your code.
 
 ```groovy
 dependencies {
