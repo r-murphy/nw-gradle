@@ -27,7 +27,6 @@ import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.ConventionMapping;
 import org.gradle.api.internal.artifacts.publish.ArchivePublishArtifact;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.internal.plugins.DefaultArtifactPublicationSet;
@@ -39,7 +38,6 @@ import org.gradle.internal.reflect.Instantiator;
 import org.gradle.plugins.ear.descriptor.DeploymentDescriptor;
 
 import rm.nw.gradle.descriptor.SAPManifest;
-import rm.nw.gradle.descriptor.SdaDD;
 
 /**
  * <p>
@@ -69,7 +67,7 @@ public class NWEarPlugin implements Plugin<Project> {
   @Override
   public void apply(final Project project) {
     project.getPlugins().apply(BasePlugin.class);
-
+    
     final NWEarPluginConvention earPluginConvention = instantiator.newInstance(NWEarPluginConvention.class, fileResolver, instantiator);
     project.getConvention().getPlugins().put(NWEAR_TASK_NAME, earPluginConvention);
     earPluginConvention.setAppDirName("EarContent"); //default

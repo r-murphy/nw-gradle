@@ -6,6 +6,7 @@ package rm.nw.gradle;
 import javax.inject.Inject;
 
 import org.gradle.api.Action;
+import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.internal.file.FileResolver;
@@ -20,20 +21,20 @@ import org.gradle.internal.reflect.Instantiator;
  *
  * @version 1.0.0
  */
-public class NWWebPlugin extends NWEarPlugin {
+public class NWWebPlugin implements Plugin<Project> {
 
   @Inject
   public NWWebPlugin(Instantiator instantiator, FileResolver fileResolver) {
-    super(instantiator, fileResolver);
+    //super(instantiator, fileResolver);
   }
 
   @Override
   public void apply(final Project project) {
     //project.getLogger().info("{}: Applying NWWebPlugin plugin", project);
-    super.apply(project);
     project.getPlugins().apply(WarPlugin.class);
-
-    NWEar earTask = super.getEarTask();
+    project.getPlugins().apply(NWEarPlugin.class);
+    NWEar earTask = (NWEar)project.getTasks().findByName("nwear");
+    
     Task warTask = project.getTasks().findByName("war");
     earTask.dependsOn(warTask);
 

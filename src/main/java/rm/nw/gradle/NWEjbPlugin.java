@@ -10,6 +10,7 @@ import java.util.concurrent.Callable;
 import javax.inject.Inject;
 
 import org.gradle.api.Action;
+import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.internal.file.FileResolver;
@@ -17,7 +18,6 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.internal.reflect.Instantiator;
 
-import rm.nw.gradle.NWEar;
 import rm.nw.gradle.util.DependenciesUtil;
 
 /**
@@ -25,18 +25,20 @@ import rm.nw.gradle.util.DependenciesUtil;
  *
  * @version 1.0.0
  */
-public class NWEjbPlugin extends NWEarPlugin {
+public class NWEjbPlugin implements Plugin<Project> {
 
   @Inject
   public NWEjbPlugin(Instantiator instantiator, FileResolver fileResolver) {
-    super(instantiator, fileResolver);
+    //super(instantiator, fileResolver);
   }
 
   @Override
   public void apply(final Project project) {
     project.getPlugins().apply(JavaPlugin.class);
-    super.apply(project);
-    NWEar earTask = super.getEarTask();
+    project.getPlugins().apply(NWEarPlugin.class);
+//    super.apply(project);
+    //NWEar earTask = super.getEarTask();
+    NWEar earTask = (NWEar)project.getTasks().findByName("nwear");
     DependenciesUtil.configureProvidedConfigurations(project);
     configureJarTaskDependency(project, earTask);
     configureDependencyJarFileSources(project, earTask);
@@ -54,7 +56,10 @@ public class NWEjbPlugin extends NWEarPlugin {
    * NW EJB Ear files contain the jar. So tell gradle to build the jar first, and add it to the copyspec.
    */
   private void configureJarTaskDependency(final Project project, final NWEar earTask) {
+    System.out.println("earTask: " + earTask);
+    
     Task jarTask = project.getTasks().findByName("jar");
+    System.out.println("jarTask: " + jarTask);
     earTask.dependsOn(jarTask);
 
     //defer adding the jar name to the 'from' list

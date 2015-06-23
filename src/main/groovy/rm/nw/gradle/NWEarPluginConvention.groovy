@@ -65,7 +65,7 @@ public class NWEarPluginConvention extends EarPluginConvention  {
 	 * @return This.
 	 */
 	public NWEarPluginConvention sapManifest(Closure configureClosure) {
-		println('!!!!!!!!!!!!NWEarPluginConvention.sapManifest Closure');
+		//println('!!!!!!!!!!!!NWEarPluginConvention.sapManifest Closure');
 		if (!sapManifest) {
 			sapManifest = instantiator.newInstance(SAPManifest.class, fileResolver);
 		}
@@ -74,7 +74,7 @@ public class NWEarPluginConvention extends EarPluginConvention  {
 	}
   
     public NWEarPluginConvention sdaDD(Closure configureClosure) {
-      println('!!!!!!!!!!!!NWEarPluginConvention.sdaDd Closure called');
+      //println('!!!!!!!!!!!!NWEarPluginConvention.sdaDd Closure called');
       if (!sdaDD) {
         sdaDD = instantiator.newInstance(SdaDD.class, fileResolver, instantiator)
         //sdaDD = instantiator.newInstance(SdaDD.class)

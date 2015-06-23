@@ -69,25 +69,27 @@ project(':multi-project-web') {
   dependencies {
     compile(project(':multi-project-util'))
   }
-  nwear {
-    //everything here is optional, just as examples
-    def vendor = 'rm'
-    archiveName = project.name + '.'  + extension
-    destinationDir = rootProject.file('dist')
-    manifest {
-      attributes("Implementation-Vendor-Id": vendor)
-    }
-    sapManifest {
-      attributes("keyvendor": vendor)
-    }
-    exclude 'application.xml'
-    rootSpec.eachFile {
-      println(" +> $it.name")
-    }
-  }
   //we'll leave sourceSets as defaults (maven convention)
   //feel free to change for your project by uncommenting the following
   //sourceSets.main.java.srcDir 'src' //to match eclipse/NWDS defaults
+
+  // this nwear config could be here, but instead we have it below as shared
+  // nwear {
+  //   //everything here is optional, just as examples
+  //   def vendor = 'rm'
+  //   archiveName = project.name + '.'  + extension
+  //   destinationDir = rootProject.file('dist')
+  //   manifest {
+  //     attributes("Implementation-Vendor-Id": vendor)
+  //   }
+  //   sapManifest {
+  //     attributes("keyvendor": vendor)
+  //   }
+  //   exclude 'application.xml'
+  //   rootSpec.eachFile {
+  //     println(" +> $it.name")
+  //   }
+  // }
 }
 
 project(':multi-project-ejb') {
@@ -96,27 +98,16 @@ project(':multi-project-ejb') {
     compile(project(':multi-project-util'))
     // providedCompile 'javax.ejb:ejb-api:3.0'
   }
+  sourceSets.main.java.srcDir 'ejbModule' //to match NWDS
+  sourceSets.test.java.srcDir 'test'
+
+  //as mentioned above, the nwear customizations could be done here.
+  //we have 1 example of a project specific one, to change the sda filename
   nwear {
-    //everything here is optional, just as examples
-    def vendor = 'rm'
-    archiveName = project.name + '.'  + extension
-    destinationDir = rootProject.file('dist')
-    manifest {
-      attributes("Implementation-Vendor-Id": vendor)
-    }
     sdaDD {
      fileName = 'sda.xml'
     }
-    sapManifest {
-      attributes("keyvendor": vendor)
-    }
-    exclude 'application.xml'
-    rootSpec.eachFile {
-      println(" +> $it.name")
-    }
   }
-  sourceSets.main.java.srcDir 'ejbModule' //to match NWDS
-  sourceSets.test.java.srcDir 'test'
 }
 
 project(':multi-project-util') {
@@ -160,8 +151,8 @@ subprojects {
 
   //Note: 'all' executes the given action against all objects in the
   //plugins collection and any objects subsequently added to the collection.
+  //Note 2: it's only called for plugins added directly (NWWeb,NWEjb)
   plugins.all { plugin ->
-    //println("plugin: " + plugin.class.simpleName + " added to " + project.name)
     if (plugin instanceof WarPlugin) {
       project.apply plugin: 'eclipse-wtp'
       project.dependencies {
@@ -201,24 +192,24 @@ subprojects {
         }
       }
     }
-    // else if (plugin.class.name.contains('NwEarPlugin')) {
-    //   project.nwear {
-    //     //everything here is optional, just as examples
-    //     def vendor = 'rm'
-    //     archiveName = project.name + '.'  + extension
-    //     destinationDir = rootProject.file('dist')
-    //     manifest {
-    //       attributes("Implementation-Vendor-Id": vendor)
-    //     }
-    //     sapManifest {
-    //       attributes("keyvendor": vendor)
-    //     }
-    //     exclude 'application.xml'
-    //     rootSpec.eachFile {
-    //       println(" +> $it.name")
-    //     }
-    //   }
-    // }
+    else if (plugin.class.simpleName.equalsIgnoreCase('NWEarPlugin')) {
+      project.nwear {
+        //everything here is optional, just as examples
+        def vendor = 'rm'
+        archiveName = project.name + '.'  + extension
+        destinationDir = rootProject.file('dist')
+        manifest {
+          attributes("Implementation-Vendor-Id": vendor)
+        }
+        sapManifest {
+          attributes("keyvendor": vendor)
+        }
+        exclude 'application.xml'
+        rootSpec.eachFile {
+          println(" +> $it.name")
+        }
+      }
+    }
   }
 
 }
