@@ -54,6 +54,9 @@ nwear {
   def vendor = 'rm'
   archiveName = project.name + '.'  + extension
   destinationDir = rootProject.file('dist')
+  sdaDD {
+   fileName = 'sda.xml'
+  }
   manifest {
     attributes("Implementation-Vendor-Id": vendor)
   }

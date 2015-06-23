@@ -24,8 +24,13 @@ import org.gradle.plugins.ear.EarPluginConvention
 import org.gradle.util.ConfigureUtil
 
 import rm.nw.gradle.descriptor.SAPManifest
+import rm.nw.gradle.descriptor.SdaDD;
 
 
+/**
+ * Plugin convention.
+ * Inspired by and mimics EarPluginConvention.
+ */
 public class NWEarPluginConvention extends EarPluginConvention  {
 	
 	/**
@@ -33,6 +38,11 @@ public class NWEarPluginConvention extends EarPluginConvention  {
 	 */
 	SAPManifest sapManifest
 	
+    /**
+     * A custom SAP/SDA deployment descriptor file. Default is sda-dd.xml with sensible defaults. 
+     */
+    SdaDD sdaDD
+  
 	//these are private in NWEarPluginConvention so need to save them ourselves
 	private final FileResolver fileResolver
 	private final Instantiator instantiator
@@ -42,7 +52,8 @@ public class NWEarPluginConvention extends EarPluginConvention  {
 		super(fileResolver, instantiator)
 		this.instantiator = instantiator;
 		this.fileResolver = fileResolver;
-		this.sapManifest {}
+		this.sapManifest {} //create the manifest
+        this.sdaDD {}
 	}
 	
 	/**
@@ -54,20 +65,22 @@ public class NWEarPluginConvention extends EarPluginConvention  {
 	 * @return This.
 	 */
 	public NWEarPluginConvention sapManifest(Closure configureClosure) {
-//		println('!!!!!!!!!!!!NWEarPluginConvention.sapManifest Closure');
+		//println('!!!!!!!!!!!!NWEarPluginConvention.sapManifest Closure');
 		if (!sapManifest) {
-//            println('No sapManifest. creating one');
-    
-//			if (project!=null) {
-//				sapManifest = instantiator.newInstance(SAPManifest.class, fileResolver, project);
-//			}
-//			else {
-				sapManifest = instantiator.newInstance(SAPManifest.class, fileResolver);
-//                println('Created sapManifest:' + sapManifest);
-//			}
+			sapManifest = instantiator.newInstance(SAPManifest.class, fileResolver);
 		}
 		ConfigureUtil.configure(configureClosure, sapManifest)
 		return this
 	}
+  
+    public NWEarPluginConvention sdaDD(Closure configureClosure) {
+      //println('!!!!!!!!!!!!NWEarPluginConvention.sdaDd Closure called');
+      if (!sdaDD) {
+        sdaDD = instantiator.newInstance(SdaDD.class, fileResolver, instantiator)
+        //sdaDD = instantiator.newInstance(SdaDD.class)
+      }
+      ConfigureUtil.configure(configureClosure, sdaDD)
+      return this
+    }
 	
 }

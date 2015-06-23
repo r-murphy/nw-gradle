@@ -26,7 +26,7 @@ import org.gradle.api.internal.file.copy.CopySpecInternal
 import org.gradle.plugins.ear.Ear
 
 import rm.nw.gradle.descriptor.SAPManifest
-import rm.nw.gradle.descriptor.SdaDd
+import rm.nw.gradle.descriptor.SdaDD
 
 /**
  * Assembles a NW EAR archive.
@@ -49,7 +49,7 @@ class NWEar extends Ear {
 	/**
 	 * The sda-dd.xml configuration
 	 */
-	SdaDd sdaDd = new SdaDd()
+	SdaDD sdaDd
 	
 	/**
 	 * Allows the plugin to specify Action to call before the copy.
@@ -58,7 +58,6 @@ class NWEar extends Ear {
 	 */
 	protected final def beforeCopyActions = []
   
-	
 	/**
 	 * NWEar Constructor
 	 * Note to self: groovy will automatically call super()
@@ -104,7 +103,7 @@ class NWEar extends Ear {
 		
 		metaInfSpec.addChild().from {
 			MapFileTree temporarySource = new MapFileTree(getTemporaryDirFactory(), getFileSystem())
-			final SdaDd sdaDd = sdaDd //very important to store this local ref as final to avoid null pointer
+			final SdaDD sdaDd = sdaDd //very important to store this local ref as final to avoid null pointer
 			if (this.sdaDd) {
 				//println 'no sda-dd.xml'
 				//println '***sda2 add: ' + this.getProject().getName() + '~' + sdaDd.fileName

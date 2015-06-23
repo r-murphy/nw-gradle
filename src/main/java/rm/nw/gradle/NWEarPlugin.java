@@ -67,7 +67,7 @@ public class NWEarPlugin implements Plugin<Project> {
   @Override
   public void apply(final Project project) {
     project.getPlugins().apply(BasePlugin.class);
-
+    
     final NWEarPluginConvention earPluginConvention = instantiator.newInstance(NWEarPluginConvention.class, fileResolver, instantiator);
     project.getConvention().getPlugins().put(NWEAR_TASK_NAME, earPluginConvention);
     earPluginConvention.setAppDirName("EarContent"); //default
@@ -76,8 +76,9 @@ public class NWEarPlugin implements Plugin<Project> {
     wireEarTaskConventions(project, earPluginConvention);
     configureAppDirSources(project, earPluginConvention);
     configureDeploymentDescriptor(project, earPluginConvention);
-    configureSapManifest(project, earPluginConvention);
     configureManifest(project, earPluginConvention, earTask);
+    configureSapManifest(project, earPluginConvention);
+    
   }
 
   /**
@@ -144,7 +145,7 @@ public class NWEarPlugin implements Plugin<Project> {
   }
 
   /**
-   * Wire up the conventions.
+   * Wire up the conventions to the task
    */
   private void wireEarTaskConventions(final Project project, final NWEarPluginConvention earConvention) {
     project.getTasks().withType(NWEar.class, new Action<NWEar>() {
@@ -158,6 +159,16 @@ public class NWEarPlugin implements Plugin<Project> {
         task.getConventionMapping().map("sapManifest", new Callable<SAPManifest>() {
           public SAPManifest call() throws Exception { return earConvention.getSapManifest(); }
         });
+        
+        //for some reason, not able to use task mapping. trying this. works okay with 1 project.
+        task.setSdaDd(earConvention.getSdaDD());
+        
+//        ConventionMapping conventionMapping = task.getConventionMapping();
+//        System.out.println(conventionMapping.getClass());
+//        task.getExtensions().create("nwear", NwEarExtension.class);
+//        task.getConventionMapping().map("sdaDD", new Callable<SdaDD>() {
+//          public SdaDD call() throws Exception { return earConvention.getSdaDD(); }
+//        });
       }
     });
   }
