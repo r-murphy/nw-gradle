@@ -20,15 +20,15 @@ import rm.nw.gradle.descriptor.helpers.ComponentElementHelper;
 import rm.nw.gradle.descriptor.helpers.ManifestStringSplitter;
 
 public class SAPManifest extends DefaultManifest {
-  
+
   public static final String MANIFEST_DATE_FORMAT = "yyyy.MM.dd.HH.mm.ss";
 
   private String fileName = "SAP_MANIFEST.MF";
-  
+
   private File applicationJ2eeEngineFile; //file path
-  
+
   private boolean includeDependencies = false;
-  
+
   @Inject
   public SAPManifest(FileResolver fileResolver) {
     super(fileResolver);
@@ -46,7 +46,7 @@ public class SAPManifest extends DefaultManifest {
   public SAPManifest(Object manifestPath, FileResolver fileResolver) {
     super(manifestPath, fileResolver);
   }
-  
+
   public void setIncludeDependencies(boolean includeDependencies) {
     this.includeDependencies = includeDependencies;
   }
@@ -58,7 +58,7 @@ public class SAPManifest extends DefaultManifest {
   public void setFileName(String fileName) {
     this.fileName = fileName;
   }
-  
+
   public void setApplicationJ2eeEngineFile(File applicationJ2eeEngineFile) {
     this.applicationJ2eeEngineFile = applicationJ2eeEngineFile;
   }
@@ -103,19 +103,19 @@ public class SAPManifest extends DefaultManifest {
     }
 
     attributes.put("componentelement", ComponentElementHelper.generate(attributes));
-    
+
     //System.out.println("SAPManifest.getEffectiveManifest~includeDependencies:" +includeDependencies);
     //System.out.println("SAPManifest.getEffectiveManifest~applicationJ2eeEngineFile:" +applicationJ2eeEngineFile);
-    
+
     if (includeDependencies && applicationJ2eeEngineFile!=null) {
       //deferred application-j2ee-engine.xml parse
       final ApplicationJ2eeEngineHelper applicationJ2eeEngineHelper = new ApplicationJ2eeEngineHelper();
       applicationJ2eeEngineHelper.setSourceFile(applicationJ2eeEngineFile).parse();
-      
+
       String dependencies = applicationJ2eeEngineHelper.toDepenencies(null).toString();
       attributes.put("dependencies", ManifestStringSplitter.splitIt(dependencies));
       //System.out.println(ManifestStringSplitter.splitIt(dependencies));
-      
+
       String dependencyList = applicationJ2eeEngineHelper.toDepenencyList(null).toString();
       attributes.put("dependencyList", ManifestStringSplitter.splitIt(dependencyList));
       //System.out.println(ManifestStringSplitter.splitIt(dependencyList));
@@ -124,7 +124,7 @@ public class SAPManifest extends DefaultManifest {
       attributes.remove("dependencies");
       attributes.remove("dependencyList");
     }
-    
+
     //System.out.println("SAPManifest.getEffectiveManifest() - attributes.get("componentelement"));
     return super.getEffectiveManifest();
   }

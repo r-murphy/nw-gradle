@@ -34,7 +34,7 @@ public class NWWebPlugin implements Plugin<Project> {
     project.getPlugins().apply(WarPlugin.class);
     project.getPlugins().apply(NWEarPlugin.class);
     NWEar earTask = (NWEar)project.getTasks().findByName("nwear");
-    
+
     Task warTask = project.getTasks().findByName("war");
     earTask.dependsOn(warTask);
 

@@ -24,7 +24,7 @@ public class SAPManifestTest {
   public static File getUserDirectoryPath() {
     return new File(System.getProperty("user.home"));
   }
-  
+
   //used by other helper testers
   public static SAPManifest createSAPManifest() {
     FileResolver fileResolver = new IdentityFileResolver();
@@ -53,21 +53,21 @@ public class SAPManifestTest {
     assertContains("keyvendor: example.com", result);
     assertContains("deployfile: sda-dd.xml", result);
   }
-  
+
   @Test
   public void testWithDependencies() {
     SAPManifest sapManifest = createSAPManifest();
     sapManifest.setApplicationJ2eeEngineFile(ApplicationJ2eeEngineHelperTester.FILE);
     sapManifest.setIncludeDependencies(true);
-    
+
     Project project = ProjectBuilder.builder().withName("MyTestProject").build();
     project.setGroup("example.com");
     sapManifest.updateProjectDetails(project);
-    
+
     StringWriter writer = new StringWriter();
     sapManifest.writeTo(writer);
     String result = writer.toString();
-    
+
     assertContains("dependencies: <dependency  Implementation-Title=\"engine.security.facade\" Implementat", result);
     assertContains("dependencyList: <dependency  keyname=\"engine.security.facade\" keyvendor=\"sap.com\" /> <", result);
   }

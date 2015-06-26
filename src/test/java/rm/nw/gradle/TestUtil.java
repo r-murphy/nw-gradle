@@ -14,13 +14,13 @@ public class TestUtil {
       URL resource = TestUtil.class.getClassLoader().getResource(path);
       //String file = TestUtil.class.getResource(path).getFile();
       return FileUtils.readFileToString(new File(resource.toURI()));
-    } 
+    }
     catch (IOException e) {
       throw new RuntimeException(e);
-    } 
+    }
     catch (URISyntaxException e) {
       throw new RuntimeException(e);
     }
   }
-  
+
 }

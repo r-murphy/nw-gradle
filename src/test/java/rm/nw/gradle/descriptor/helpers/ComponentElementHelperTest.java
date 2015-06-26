@@ -14,7 +14,7 @@ public class ComponentElementHelperTest {
     Attributes attributes = generateAttributes();
     String generated = ComponentElementHelper.generate(attributes);
     System.out.println(generated);
-//    Assert.assertEquals(EXPECTED, generated);
+    //    Assert.assertEquals(EXPECTED, generated);
   }
 
   @Test

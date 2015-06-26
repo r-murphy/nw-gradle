@@ -4,17 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ManifestStringSplitter {
-  
+
   private static final int MAX_CHARS = 70;
-  
+
   /**
    * Splits the string as per the SAP_MANIFEST requirements.
    *   -each line not exceeding MAX_CHARS, including real spaces in the xml
    *   -each new line starting with a space that is not included in the MAX_CHARS count
    *   -there is also a single space at the end. unsure if it counts in the MAX_CHARS.
-   *   
+   *
    *   TODO support input builder and/or writer
-   *   
+   *
    * @param string
    * @return
    */
@@ -36,5 +36,5 @@ public class ManifestStringSplitter {
     }
     return parts;
   }
-  
+
 }

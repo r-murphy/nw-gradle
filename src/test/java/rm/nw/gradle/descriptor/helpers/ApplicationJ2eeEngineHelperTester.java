@@ -12,12 +12,12 @@ import rm.nw.gradle.descriptor.helpers.ApplicationJ2eeEngineHelper.Reference;
 
 @RunWith(JUnit4.class)
 public class ApplicationJ2eeEngineHelperTester {
-  
+
   public static final File FILE;
   static {
     FILE = new File(ApplicationJ2eeEngineHelperTester.class.getClassLoader().getResource("application-j2ee-engine.xml").getFile());
   }
-  
+
   @Test
   public void testParse() {
     ApplicationJ2eeEngineHelper helper = new ApplicationJ2eeEngineHelper();
@@ -25,7 +25,7 @@ public class ApplicationJ2eeEngineHelperTester {
     Assert.assertEquals(8, helper.references.size());
     Assert.assertEquals("engine.security.facade", helper.references.get(0).referenceTarget);
   }
-  
+
   @Test
   public void testParseAndWrite() {
     ApplicationJ2eeEngineHelper helper = new ApplicationJ2eeEngineHelper();
@@ -35,7 +35,7 @@ public class ApplicationJ2eeEngineHelperTester {
     Assert.assertEquals(DEPS, helper.toDepenencies(null).toString());
     Assert.assertEquals(DEPL, helper.toDepenencyList(null).toString());
   }
-  
+
   @Test
   public void testReferenceToDependenciesItem() {
     Reference reference = new ApplicationJ2eeEngineHelper.Reference();
@@ -44,10 +44,10 @@ public class ApplicationJ2eeEngineHelperTester {
     //reference.referenceType = ReferenceType.hard;
     //reference.targetType = ReferenceTargetType.service;
     Assert.assertEquals(
-        "<dependency  Implementation-Title=\"engine.security.facade\" Implementation-Vendor-Id=\"sap.com\" />", 
-        reference.toDependenciesItem(null).toString());
+      "<dependency  Implementation-Title=\"engine.security.facade\" Implementation-Vendor-Id=\"sap.com\" />",
+      reference.toDependenciesItem(null).toString());
   }
-  
+
   @Test
   public void testReferenceToDependencyListItem() {
     Reference reference = new ApplicationJ2eeEngineHelper.Reference();
@@ -56,8 +56,8 @@ public class ApplicationJ2eeEngineHelperTester {
     //reference.referenceType = ReferenceType.hard;
     //reference.targetType = ReferenceTargetType.service;
     Assert.assertEquals(
-        "<dependency  keyname=\"engine.security.facade\" keyvendor=\"sap.com\" />", 
-        reference.toDependencyListItem(null).toString());
+      "<dependency  keyname=\"engine.security.facade\" keyvendor=\"sap.com\" />",
+      reference.toDependencyListItem(null).toString());
   }
-  
+
 }

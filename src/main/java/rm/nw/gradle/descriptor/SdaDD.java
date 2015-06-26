@@ -15,11 +15,11 @@ public class SdaDD extends DefaultDeploymentDescriptor {
   }
 
   private String fileName = "sda-dd.xml";
-  
+
   public void setFileName(String fileName) {
     this.fileName = fileName;
   }
-  
+
   public String getFileName() {
     return fileName;
   }

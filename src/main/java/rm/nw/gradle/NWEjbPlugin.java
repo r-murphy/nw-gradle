@@ -36,19 +36,17 @@ public class NWEjbPlugin implements Plugin<Project> {
   public void apply(final Project project) {
     project.getPlugins().apply(JavaPlugin.class);
     project.getPlugins().apply(NWEarPlugin.class);
-//    super.apply(project);
+    //    super.apply(project);
     //NWEar earTask = super.getEarTask();
     NWEar earTask = (NWEar)project.getTasks().findByName("nwear");
     DependenciesUtil.configureProvidedConfigurations(project);
     configureJarTaskDependency(project, earTask);
     configureDependencyJarFileSources(project, earTask);
-    
+
     //Tells SAPManifest to include the dependencies section. Needed for ejb ears, but not web.
     //this is configuration time when they apply the plugin, so the user may still override it in build.gradle
     //after applying the plugin
-    
-    System.out.println("earTask.getSapManifest():"+earTask.getSapManifest());
-    
+    //System.out.println("earTask.getSapManifest():"+earTask.getSapManifest());
     earTask.getSapManifest().setIncludeDependencies(true);
   }
 
@@ -56,10 +54,7 @@ public class NWEjbPlugin implements Plugin<Project> {
    * NW EJB Ear files contain the jar. So tell gradle to build the jar first, and add it to the copyspec.
    */
   private void configureJarTaskDependency(final Project project, final NWEar earTask) {
-    System.out.println("earTask: " + earTask);
-    
     Task jarTask = project.getTasks().findByName("jar");
-    System.out.println("jarTask: " + jarTask);
     earTask.dependsOn(jarTask);
 
     //defer adding the jar name to the 'from' list
@@ -67,7 +62,6 @@ public class NWEjbPlugin implements Plugin<Project> {
     Action<NWEar> beforeEarCopy = new Action<NWEar>() {
       @Override
       public void execute(NWEar earTask) {
-        //System.out.println("----------deferred--------");
         Task jarTask = earTask.getProject().getTasks().getByName("jar");
         if (jarTask instanceof AbstractArchiveTask) {
           AbstractArchiveTask archiveTask = (AbstractArchiveTask)jarTask;
@@ -105,5 +99,5 @@ public class NWEjbPlugin implements Plugin<Project> {
       }
     });
   }
-  
+
 }

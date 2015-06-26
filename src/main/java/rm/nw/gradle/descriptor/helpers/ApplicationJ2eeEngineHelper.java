@@ -12,29 +12,29 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 //<application-j2ee-engine xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="application-j2ee-engine.xsd">
-//  <reference 
+//  <reference
 //    reference-type="hard">
-//    <reference-target 
-//      provider-name="sap.com" 
+//    <reference-target
+//      provider-name="sap.com"
 //      target-type="library">com.sap.aii.af.lib.facade</reference-target>
 //  </reference>
 //  ...
 //</application-j2ee-engine>
 
 public class ApplicationJ2eeEngineHelper {
-  
+
   List<Reference> references = new ArrayList<Reference>();
   File sourceFile;
-  
+
   public List<Reference> getReferences() {
     return references;
   }
-  
+
   public ApplicationJ2eeEngineHelper setSourceFile(File sourceFile) {
     this.sourceFile = sourceFile;
     return this;
   }
-  
+
   /**
    * Parse the xml doc from source file.
    */
@@ -57,9 +57,9 @@ public class ApplicationJ2eeEngineHelper {
     }
     return this;
   }
-  
+
   /*
-   * Parse individual reference xml element to Reference class 
+   * Parse individual reference xml element to Reference class
    */
   private static Reference parseReference(Element referenceEl) {
     Reference reference = new Reference();
@@ -72,10 +72,10 @@ public class ApplicationJ2eeEngineHelper {
     reference.referenceTarget = refTarget.getTextContent();
     return reference;
   }
-  
+
   /**
    * Create the 'dependencies' string.
-   * No splitting or trailing space at the end. Both done later if needed. 
+   * No splitting or trailing space at the end. Both done later if needed.
    * @param builder - optional build to append to
    * @return StringBuilder
    */
@@ -95,10 +95,10 @@ public class ApplicationJ2eeEngineHelper {
     }
     return builder;
   }
-  
+
   /**
    * Create the 'dependencyList' string.
-   * No splitting or trailing space at the end. Both done later if needed. 
+   * No splitting or trailing space at the end. Both done later if needed.
    * @param builder - optional build to append to
    * @return StringBuilder
    */
@@ -118,49 +118,49 @@ public class ApplicationJ2eeEngineHelper {
     }
     return builder;
   }
-  
-//  public static enum ReferenceType {
-//    hard, soft;
-//  }
-//  
-//  public static enum ReferenceTargetType {
-//    service, library; //Other?
-//  }
-  
+
+  //  public static enum ReferenceType {
+  //    hard, soft;
+  //  }
+  //
+  //  public static enum ReferenceTargetType {
+  //    service, library; //Other?
+  //  }
+
   public static class Reference {
-//    ReferenceType referenceType;
+    //    ReferenceType referenceType;
     String providerName;
-//    ReferenceTargetType targetType;
+    //    ReferenceTargetType targetType;
     String referenceTarget;
-    
+
     @Override
     public String toString() {
-      //return referenceType + ":" + targetType + ":" + providerName + ":" + referenceTarget; 
+      //return referenceType + ":" + targetType + ":" + providerName + ":" + referenceTarget;
       return providerName + ":" + referenceTarget;
     }
-    
+
     public StringBuilder toDependenciesItem(StringBuilder builder) {
       //<dependency  Implementation-Title="engine.security.facade" Implementation-Vendor-Id="sap.com" />
       if (builder==null) {
         builder = new StringBuilder();
       }
       builder.append("<dependency  Implementation-Title=\"").append(referenceTarget)
-        .append("\" Implementation-Vendor-Id=\"").append(providerName)
-        .append("\" />");
+      .append("\" Implementation-Vendor-Id=\"").append(providerName)
+      .append("\" />");
       return builder;
     }
-    
+
     public StringBuilder toDependencyListItem(StringBuilder builder) {
       //<dependency  keyname="engine.security.facade" keyvendor="sap.com" />
       if (builder==null) {
         builder = new StringBuilder();
       }
       builder.append("<dependency  keyname=\"").append(referenceTarget)
-        .append("\" keyvendor=\"").append(providerName)
-        .append("\" />");
+      .append("\" keyvendor=\"").append(providerName)
+      .append("\" />");
       return builder;
     }
-    
+
   }
-  
+
 }

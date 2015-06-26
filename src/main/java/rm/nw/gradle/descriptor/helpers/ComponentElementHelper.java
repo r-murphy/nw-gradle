@@ -16,7 +16,7 @@ import rm.nw.gradle.descriptor.SAPManifest;
 public class ComponentElementHelper {
 
   public static final String UPDATEVERSION_DATE_FORMAT = "yyyyMMddHHmmss";
-  
+
   /*
      componentelement: <componentelement  name="MTestEAR" vendor="sap.com" componenttype="DC"
      subsystem="NO_SUBSYS" location="localhost" counter="2015.02.18.21.56.
