@@ -133,9 +133,12 @@ war {
 ### NW EJB Plugin
 The NW Web plugin is used on a NW EJB project, such as adapter modules. The NW Web plugin will automatically apply the NW EAR plugin, as well as the standard Java Plugin. There will be a one-to-one relationship between ejb project and ear, which mimics NWDS deployment.
 
+The EJB Plugin relies on the standard jar task to create the ejb jar file. 
+The plugin will search the source files to discover the META-INF folder to add it to the jar file as well. This typically contains the ejb-j2ee-engine.xml file and the MANIFEST.MF file. Note that normally, gradle will exclude any found MANIFEST.MF files and build its own MANIFEST.MF file, allowing its parameters to be configured in the build.gradle script. However this plugin reverses that priority in order since source files should have a higher priority. This enables better cross-compatibility with NWDS, if needed. 
+
 ```groovy
 project(:MyModulePrj) {
-	apply plugin: 'nw-ejb'
+	apply plugin: 'nw-ejb'	
 	...
 }
 ```
