@@ -41,6 +41,10 @@ public class DependenciesUtil {
       configurationContainer.getByName(JavaPlugin.RUNTIME_CONFIGURATION_NAME).extendsFrom(provideRuntimeConfiguration);
     }
   }
+  
+  public static SourceSet getMainSourceSet(final Project project) {
+    return getSourceSet(project, SourceSet.MAIN_SOURCE_SET_NAME);
+  }
 
   /**
    * 'compile' (dependencies and sourceSet) minus ('providedCompile' and 'provided')
@@ -55,7 +59,7 @@ public class DependenciesUtil {
     return getSourceSet(project, SourceSet.MAIN_SOURCE_SET_NAME)
            .getCompileClasspath();
   }
-
+  
   /**
    * Helper to get the source set by name
    */

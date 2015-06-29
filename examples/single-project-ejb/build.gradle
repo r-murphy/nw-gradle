@@ -44,6 +44,12 @@ jar {
   //everything here is optional, just as examples
   archiveName = project.name + '.'  + extension
   destinationDir = rootProject.file('dist')
+  
+  //note. as of version 1.1.0, the META-INF directory is discovered and copied automatically to the jar
+  //jar.metaInf {
+    //from(project.file('ejbModule/META-INF').exclude('MANIFEST.MF')
+  //}
+  
   rootSpec.eachFile {
     println(" +> $it.name")
   }

@@ -13,9 +13,12 @@ import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.file.DuplicatesStrategy;
 import org.gradle.api.internal.file.FileResolver;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
+import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.internal.reflect.Instantiator;
 
 import rm.nw.gradle.util.DependenciesUtil;
@@ -26,7 +29,11 @@ import rm.nw.gradle.util.DependenciesUtil;
  * @version 1.0.0
  */
 public class NWEjbPlugin implements Plugin<Project> {
-
+  
+  private static final String MANIFEST_MF = "MANIFEST.MF";
+  private static final String META_INF = "META-INF";
+  
+  
   @Inject
   public NWEjbPlugin(Instantiator instantiator, FileResolver fileResolver) {
     //super(instantiator, fileResolver);
@@ -42,6 +49,8 @@ public class NWEjbPlugin implements Plugin<Project> {
     DependenciesUtil.configureProvidedConfigurations(project);
     configureJarTaskDependency(project, earTask);
     configureDependencyJarFileSources(project, earTask);
+    configureJarMetaInfCopy(project);
+    
 
     //Tells SAPManifest to include the dependencies section. Needed for ejb ears, but not web.
     //this is configuration time when they apply the plugin, so the user may still override it in build.gradle
@@ -49,28 +58,31 @@ public class NWEjbPlugin implements Plugin<Project> {
     //System.out.println("earTask.getSapManifest():"+earTask.getSapManifest());
     earTask.getSapManifest().setIncludeDependencies(true);
   }
-
+  
+  private static String getMetaInfFolderInPath(String filePath) {
+    int indexOf = filePath.indexOf(META_INF);
+    if (indexOf == -1) {
+      return null;
+    }
+    return filePath.substring(0, indexOf + META_INF.length());
+  }
+  
   /**
    * NW EJB Ear files contain the jar. So tell gradle to build the jar first, and add it to the copyspec.
+   * Use an action for the copyspec in case the jar name is changed in build.gradle.
    */
   private void configureJarTaskDependency(final Project project, final NWEar earTask) {
-    Task jarTask = project.getTasks().findByName("jar");
+    Jar jarTask = (Jar)project.getTasks().findByName("jar");
     earTask.dependsOn(jarTask);
-
-    //defer adding the jar name to the 'from' list
-    //since the build.gradle may change it still
-    Action<NWEar> beforeEarCopy = new Action<NWEar>() {
+    
+    Action<Task> beforeEarCopy = new Action<Task>() {
       @Override
-      public void execute(NWEar earTask) {
-        Task jarTask = earTask.getProject().getTasks().getByName("jar");
-        if (jarTask instanceof AbstractArchiveTask) {
-          AbstractArchiveTask archiveTask = (AbstractArchiveTask)jarTask;
-          //System.out.println("from : " + project.file(archiveTask.getArchivePath()));
-          earTask.from(project.file(archiveTask.getArchivePath()));
-        }
+      public void execute(Task task) {
+        AbstractArchiveTask jarTask = (AbstractArchiveTask)earTask.getProject().getTasks().getByName("jar");
+        ((NWEar)earTask).from(project.file(jarTask.getArchivePath()));
       }
     };
-    earTask.addBeforeCopyAction(beforeEarCopy);
+    earTask.doFirst(beforeEarCopy);
   }
 
   /**
@@ -90,12 +102,49 @@ public class NWEjbPlugin implements Plugin<Project> {
       public void execute(final NWEar task) {
         task.dependsOn(new Callable<Object>() {
           public Object call() throws Exception {
-            //System.out.println("-------NWEar.dependsOn.execute()----------------");
             Set<File> jars = DependenciesUtil.getCompileFilesMinusProvided(project);
             task.from(jars);
             return null;
           }
         });
+      }
+    });
+  }
+
+  /**
+   * Searches the project for the META-INF folder and configures it in the jar task.
+   * Using an Action to run after all build.gradle sourceSets are processed.
+   */
+  private void configureJarMetaInfCopy(final Project project) {
+    project.getTasks().findByName("jar")
+    .doFirst(new Action<Task>() {
+      @Override
+      public void execute(Task task) {
+        Jar jarTask = (Jar)task;
+        SourceSet mainSourceSet = DependenciesUtil.getMainSourceSet(project);
+        
+        Set<File> files = mainSourceSet.getAllSource().getFiles();
+        boolean metaInfFound = false;
+        boolean manifestFound = false;
+        for (File file : files) {
+          String path = file.getPath();
+          if (!metaInfFound && path.contains(META_INF)) {
+            metaInfFound = true;
+            String metaInfPath = getMetaInfFolderInPath(path);
+            jarTask.getMetaInf().from(metaInfPath)
+              //jar creates its own metainf.mf first, so this would be a duplicate
+              .exclude(MANIFEST_MF) 
+              .setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE);
+          }
+          else if (!manifestFound && path.contains(MANIFEST_MF)) {
+            manifestFound = true;
+            //tell jar to use our manifest instead of creating one 
+            jarTask.getManifest().from(path);
+          }
+          else if (metaInfFound && manifestFound) {
+            break; //we found both. nothing else to do
+          }
+        }
       }
     });
   }

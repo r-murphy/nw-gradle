@@ -210,6 +210,10 @@ Contributions are welcome.
 
 - Submit pull request.
 
+## Release Notes
+
+See [ReleaseNotes.md](ReleaseNotes.md)
+
 ## License
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
 
