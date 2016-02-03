@@ -14,8 +14,10 @@ import rm.nw.gradle.descriptor.helpers.ApplicationJ2eeEngineHelper.Reference;
 public class ApplicationJ2eeEngineHelperTester {
 
   public static final File FILE;
+  public static final File FILE_NO_REFS;
   static {
     FILE = new File(ApplicationJ2eeEngineHelperTester.class.getClassLoader().getResource("application-j2ee-engine.xml").getFile());
+    FILE_NO_REFS = new File(ApplicationJ2eeEngineHelperTester.class.getClassLoader().getResource("application-j2ee-engine-no-refs.xml").getFile());
   }
 
   @Test
@@ -32,8 +34,8 @@ public class ApplicationJ2eeEngineHelperTester {
     helper.setSourceFile(FILE).parse();
     final String DEPS = TestUtil.getClasspathFileContent("output/dependencies.txt");
     final String DEPL = TestUtil.getClasspathFileContent("output/dependencyList.txt");
-    Assert.assertEquals(DEPS, helper.toDepenencies(null).toString());
-    Assert.assertEquals(DEPL, helper.toDepenencyList(null).toString());
+    Assert.assertEquals(DEPS, helper.toDependencies().toString());
+    Assert.assertEquals(DEPL, helper.toDependencyList().toString());
   }
 
   @Test
@@ -58,6 +60,13 @@ public class ApplicationJ2eeEngineHelperTester {
     Assert.assertEquals(
       "<dependency  keyname=\"engine.security.facade\" keyvendor=\"sap.com\" />",
       reference.toDependencyListItem(null).toString());
+  }
+
+  @Test
+  public void testNoRefsToDependencies() {
+    ApplicationJ2eeEngineHelper helper = new ApplicationJ2eeEngineHelper();
+    helper.setSourceFile(FILE_NO_REFS).parse();
+    Assert.assertNotNull("dependencies should not be even when no refs", helper.toDependencyList());
   }
 
 }

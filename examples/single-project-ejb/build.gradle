@@ -44,22 +44,25 @@ jar {
   //everything here is optional, just as examples
   archiveName = project.name + '.'  + extension
   destinationDir = rootProject.file('dist')
-  
+
   //note. as of version 1.1.0, the META-INF directory is discovered and copied automatically to the jar
   //jar.metaInf {
     //from(project.file('ejbModule/META-INF').exclude('MANIFEST.MF')
   //}
-  
+
   rootSpec.eachFile {
     println(" +> $it.name")
   }
 }
-sourceSets.main.java.srcDir 'ejbModule' //to match NWDS
+
+//we'll use the NWDS convention for sourceSets
+sourceSets.main.java.srcDir 'ejbModule'
+
+//nwear config. everything here is optional, just as examples.
 nwear {
-  //everything here is optional, just as examples
   def vendor = 'rm'
-  archiveName = project.name + '.'  + extension
-  destinationDir = rootProject.file('dist')
+  archiveName = project.name + '.'  + extension //personal preference. no version #.
+  destinationDir = rootProject.file('dist') //personal preference.
   sdaDD {
    fileName = 'sda.xml'
   }
@@ -78,7 +81,3 @@ nwear {
 //aliases.
 task('sda').dependsOn('nwear')
 task('ear').dependsOn('nwear')
-
-//we'll leave sourceSets as defaults (maven convention)
-//feel free to change for your project by uncommenting the following
-//sourceSets.main.java.srcDir 'src' //to match eclipse/NWDS defaults

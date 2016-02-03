@@ -67,14 +67,40 @@ public class SAPManifestTest {
     StringWriter writer = new StringWriter();
     sapManifest.writeTo(writer);
     String result = writer.toString();
+    //System.out.println(result);
 
     assertContains("dependencies: <dependency  Implementation-Title=\"engine.security.facade\" Implementat", result);
     assertContains("dependencyList: <dependency  keyname=\"engine.security.facade\" keyvendor=\"sap.com\" /> <", result);
   }
 
+  @Test
+  //Fixes Issue#8
+  public void testWithNoDependencies() {
+    SAPManifest sapManifest = createSAPManifest();
+    sapManifest.setApplicationJ2eeEngineFile(ApplicationJ2eeEngineHelperTester.FILE_NO_REFS);
+    sapManifest.setIncludeDependencies(true);
+
+    Project project = ProjectBuilder.builder().withName("MyTestProject").build();
+    project.setGroup("example.com");
+    sapManifest.updateProjectDetails(project);
+
+    StringWriter writer = new StringWriter();
+    sapManifest.writeTo(writer);
+    String result = writer.toString();
+
+    assertDoesNotContain("dependencies", result);
+    assertDoesNotContain("dependencyList", result);
+  }
+
   public void assertContains(String expected, String in) {
     if (!in.contains(expected)) {
-      throw new Assert.AssertionFailedException(expected + "not found in string");
+      throw new Assert.AssertionFailedException("'" + expected + "' not found in string");
+    }
+  }
+
+  public void assertDoesNotContain(String substring, String in) {
+    if (in.contains(substring)) {
+      throw new Assert.AssertionFailedException("'" + substring + "' was found in string");
     }
   }
 

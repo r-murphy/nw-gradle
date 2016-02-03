@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application-j2ee-engine xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="application-j2ee-engine.xsd">
+	<!-- no reference elements -->
+	<!-- end value mapping dependancies -->
+	<fail-over-enable
+		mode="disable"
+		xsi:type="fail-over-enableType_disable"/>
+</application-j2ee-engine>

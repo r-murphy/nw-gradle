@@ -25,6 +25,7 @@ public class ApplicationJ2eeEngineHelper {
 
   List<Reference> references = new ArrayList<Reference>();
   File sourceFile;
+  boolean parsed;
 
   public List<Reference> getReferences() {
     return references;
@@ -48,6 +49,7 @@ public class ApplicationJ2eeEngineHelper {
         Reference reference = parseReference((Element)nodeList.item(i));
         references.add(reference);
       }
+      parsed = true;
     }
     catch (Exception e) {
       if (e instanceof RuntimeException) {
@@ -56,6 +58,10 @@ public class ApplicationJ2eeEngineHelper {
       throw new RuntimeException(e);
     }
     return this;
+  }
+
+  private void parseIfNeeded() {
+    if (!parsed) parse();
   }
 
   /*
@@ -73,13 +79,24 @@ public class ApplicationJ2eeEngineHelper {
     return reference;
   }
 
+  public int getReferenceCount() {
+    parseIfNeeded();
+    return references.size();
+  }
+
+  public boolean hasReferences() {
+    parseIfNeeded();
+    return !references.isEmpty();
+  }
+
   /**
    * Create the 'dependencies' string.
    * No splitting or trailing space at the end. Both done later if needed.
    * @param builder - optional build to append to
    * @return StringBuilder
    */
-  public StringBuilder toDepenencies(StringBuilder builder) {
+  public StringBuilder toDependencies(StringBuilder builder) {
+    parseIfNeeded();
     if (builder == null) {
       builder = new StringBuilder();
     }
@@ -96,13 +113,18 @@ public class ApplicationJ2eeEngineHelper {
     return builder;
   }
 
+  public StringBuilder toDependencies() {
+    return toDependencies(null);
+  }
+
   /**
    * Create the 'dependencyList' string.
    * No splitting or trailing space at the end. Both done later if needed.
    * @param builder - optional build to append to
    * @return StringBuilder
    */
-  public StringBuilder toDepenencyList(StringBuilder builder) {
+  public StringBuilder toDependencyList(StringBuilder builder) {
+    parseIfNeeded();
     if (builder == null) {
       builder = new StringBuilder();
     }
@@ -117,6 +139,10 @@ public class ApplicationJ2eeEngineHelper {
       reference.toDependencyListItem(builder);
     }
     return builder;
+  }
+
+  public StringBuilder toDependencyList() {
+    return toDependencyList(null);
   }
 
   //  public static enum ReferenceType {
@@ -159,6 +185,10 @@ public class ApplicationJ2eeEngineHelper {
       .append("\" keyvendor=\"").append(providerName)
       .append("\" />");
       return builder;
+    }
+
+    public StringBuilder toDependencyListItem() {
+      return toDependenciesItem(null);
     }
 
   }

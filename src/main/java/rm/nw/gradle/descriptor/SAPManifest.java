@@ -21,6 +21,8 @@ import rm.nw.gradle.descriptor.helpers.ManifestStringSplitter;
 
 public class SAPManifest extends DefaultManifest {
 
+  //  private static final Logger logger = LoggerFactory.getLogger(SAPManifest.class);
+
   public static final String MANIFEST_DATE_FORMAT = "yyyy.MM.dd.HH.mm.ss";
 
   private String fileName = "SAP_MANIFEST.MF";
@@ -104,23 +106,26 @@ public class SAPManifest extends DefaultManifest {
 
     attributes.put("componentelement", ComponentElementHelper.generate(attributes));
 
-    //System.out.println("SAPManifest.getEffectiveManifest~includeDependencies:" +includeDependencies);
-    //System.out.println("SAPManifest.getEffectiveManifest~applicationJ2eeEngineFile:" +applicationJ2eeEngineFile);
+    //    System.out.println("SAPManifest.getEffectiveManifest~includeDependencies:" +includeDependencies);
+    //    System.out.println("SAPManifest.getEffectiveManifest~applicationJ2eeEngineFile:" +applicationJ2eeEngineFile);
+    boolean hasDependencies = false;
 
     if (includeDependencies && applicationJ2eeEngineFile!=null) {
       //deferred application-j2ee-engine.xml parse
       final ApplicationJ2eeEngineHelper applicationJ2eeEngineHelper = new ApplicationJ2eeEngineHelper();
       applicationJ2eeEngineHelper.setSourceFile(applicationJ2eeEngineFile).parse();
+      hasDependencies = applicationJ2eeEngineHelper.hasReferences();
+      if (hasDependencies) {
+        String dependencies = applicationJ2eeEngineHelper.toDependencies().toString();
+        attributes.put("dependencies", ManifestStringSplitter.splitIt(dependencies));
+        //System.out.println(ManifestStringSplitter.splitIt(dependencies));
 
-      String dependencies = applicationJ2eeEngineHelper.toDepenencies(null).toString();
-      attributes.put("dependencies", ManifestStringSplitter.splitIt(dependencies));
-      //System.out.println(ManifestStringSplitter.splitIt(dependencies));
-
-      String dependencyList = applicationJ2eeEngineHelper.toDepenencyList(null).toString();
-      attributes.put("dependencyList", ManifestStringSplitter.splitIt(dependencyList));
-      //System.out.println(ManifestStringSplitter.splitIt(dependencyList));
+        String dependencyList = applicationJ2eeEngineHelper.toDependencyList().toString();
+        attributes.put("dependencyList", ManifestStringSplitter.splitIt(dependencyList));
+        //System.out.println(ManifestStringSplitter.splitIt(dependencyList));
+      }
     }
-    else {
+    if (!hasDependencies) {
       attributes.remove("dependencies");
       attributes.remove("dependencyList");
     }

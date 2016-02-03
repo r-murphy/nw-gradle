@@ -29,11 +29,11 @@ import rm.nw.gradle.util.DependenciesUtil;
  * @version 1.0.0
  */
 public class NWEjbPlugin implements Plugin<Project> {
-  
+
   private static final String MANIFEST_MF = "MANIFEST.MF";
   private static final String META_INF = "META-INF";
-  
-  
+
+
   @Inject
   public NWEjbPlugin(Instantiator instantiator, FileResolver fileResolver) {
     //super(instantiator, fileResolver);
@@ -50,7 +50,7 @@ public class NWEjbPlugin implements Plugin<Project> {
     configureJarTaskDependency(project, earTask);
     configureDependencyJarFileSources(project, earTask);
     configureJarMetaInfCopy(project);
-    
+
 
     //Tells SAPManifest to include the dependencies section. Needed for ejb ears, but not web.
     //this is configuration time when they apply the plugin, so the user may still override it in build.gradle
@@ -58,7 +58,7 @@ public class NWEjbPlugin implements Plugin<Project> {
     //System.out.println("earTask.getSapManifest():"+earTask.getSapManifest());
     earTask.getSapManifest().setIncludeDependencies(true);
   }
-  
+
   private static String getMetaInfFolderInPath(String filePath) {
     int indexOf = filePath.indexOf(META_INF);
     if (indexOf == -1) {
@@ -66,7 +66,7 @@ public class NWEjbPlugin implements Plugin<Project> {
     }
     return filePath.substring(0, indexOf + META_INF.length());
   }
-  
+
   /**
    * NW EJB Ear files contain the jar. So tell gradle to build the jar first, and add it to the copyspec.
    * Use an action for the copyspec in case the jar name is changed in build.gradle.
@@ -74,7 +74,7 @@ public class NWEjbPlugin implements Plugin<Project> {
   private void configureJarTaskDependency(final Project project, final NWEar earTask) {
     Jar jarTask = (Jar)project.getTasks().findByName("jar");
     earTask.dependsOn(jarTask);
-    
+
     Action<Task> beforeEarCopy = new Action<Task>() {
       @Override
       public void execute(Task task) {
@@ -122,7 +122,7 @@ public class NWEjbPlugin implements Plugin<Project> {
       public void execute(Task task) {
         Jar jarTask = (Jar)task;
         SourceSet mainSourceSet = DependenciesUtil.getMainSourceSet(project);
-        
+
         Set<File> files = mainSourceSet.getAllSource().getFiles();
         boolean metaInfFound = false;
         boolean manifestFound = false;
@@ -132,13 +132,13 @@ public class NWEjbPlugin implements Plugin<Project> {
             metaInfFound = true;
             String metaInfPath = getMetaInfFolderInPath(path);
             jarTask.getMetaInf().from(metaInfPath)
-              //jar creates its own metainf.mf first, so this would be a duplicate
-              .exclude(MANIFEST_MF) 
-              .setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE);
+            //jar creates its own metainf.mf first, so this would be a duplicate
+            .exclude(MANIFEST_MF)
+            .setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE);
           }
           else if (!manifestFound && path.contains(MANIFEST_MF)) {
             manifestFound = true;
-            //tell jar to use our manifest instead of creating one 
+            //tell jar to use our manifest instead of creating one
             jarTask.getManifest().from(path);
           }
           else if (metaInfFound && manifestFound) {

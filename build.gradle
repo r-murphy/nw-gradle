@@ -1,7 +1,7 @@
 println(new Date())
 
 group = 'rm.tools'
-version = '1.1.0'
+version = '1.1.1'
 buildDir = '.build'
 
 //apply plugin: 'idea'
