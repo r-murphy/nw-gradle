@@ -35,8 +35,8 @@ buildscript {
 
 | Plugin  | Automatically Applies  | Creates Task  | Description |
 |---------------|----------------|----------------|----------------|
-| nw-ear    |   -   |   nwear   |   Creates a NetWeaver   |
-| nw-web    |   nw-ear, war, java   |   nwear, war (via war)  |  Creates NetWeaever Web EAR  |
+| nw-ear    |   -   |   nwear   |   Creates a NetWeaver EAR  |
+| nw-web    |   nw-ear, war, java   |   nwear, war (via war)  |  Creates NetWeaver Web EAR  |
 | nw-ejb    |   nw-ear, java   |   nwear, jar (via java)   |  Creates NetWeaver Modle EAR   |
 
 
@@ -131,71 +131,29 @@ war {
 ```
 
 ### NW EJB Plugin
-The NW Web plugin is used on a NW EJB project, such as adapter modules. The NW Web plugin will automatically apply the NW EAR plugin, as well as the standard Java Plugin. There will be a one-to-one relationship between ejb project and ear, which mimics NWDS deployment.
+The NW Web plugin is used on a NW EJB project, such as adapter modules. The NW EJB plugin will automatically apply the NW EAR plugin, as well as the standard Java Plugin. There will be a one-to-one relationship between ejb project and ear, which mimics NWDS deployment.
 
-The EJB Plugin relies on the standard jar task to create the ejb jar file. 
-The plugin will search the source files to discover the META-INF folder to add it to the jar file as well. This typically contains the ejb-j2ee-engine.xml file and the MANIFEST.MF file. Note that normally, gradle will exclude any found MANIFEST.MF files and build its own MANIFEST.MF file, allowing its parameters to be configured in the build.gradle script. However this plugin reverses that priority in order since source files should have a higher priority. This enables better cross-compatibility with NWDS, if needed. 
+The EJB Plugin relies on the standard jar task to create the ejb jar file.
+The plugin will search the source files to discover the META-INF folder to add it to the jar file as well. This typically contains the ejb-j2ee-engine.xml file and the MANIFEST.MF file. Note that normally, gradle will exclude any found MANIFEST.MF files and build its own MANIFEST.MF file, allowing its parameters to be configured in the build.gradle script. However this plugin reverses that priority in order since source files should have a higher priority. This enables better cross-compatibility with NWDS, if needed.
 
 ```groovy
 project(:MyModulePrj) {
-	apply plugin: 'nw-ejb'	
+	apply plugin: 'nw-ejb'
 	...
 }
 ```
 
-## Deployment
-Deployment is not handled by these plugins. Maybe in the future. Either deploy via the antique NWDS, via command line on the NetWeaver server, or through other J2EE deployment tools. Personally, I use a customized version of the deployment folder and tools from the NetWeaver server, but NetWeaver should (might?) support any JSR 88 deployment tool (deploytool, ant, Cargo).
-
-### References
-Assembling and Deploying J2EE Applications [http://docs.oracle.com/cd/E19253-01/817-6087/dgdeploy.html#wp76734](http://docs.oracle.com/cd/E19253-01/817-6087/dgdeploy.html#wp76734)
-
-Deploying Applications [http://help.sap.com/saphelp_nw74/helpdata/en/4a/f055d4032832c7e10000000a421937/content.htm](http://help.sap.com/saphelp_nw74/helpdata/en/4a/f055d4032832c7e10000000a421937/content.htm)
-
-Using Ant Scripts to Work with SDAs [http://help.sap.com/saphelp_nw74/helpdata/en/4a/f01de74a5a6d62e10000000a42189c/content.htm](http://help.sap.com/saphelp_nw74/helpdata/en/4a/f01de74a5a6d62e10000000a42189c/content.htm)
-
-Using Shell Scripts to Work with SDAs [http://help.sap.com/saphelp_nw74/helpdata/en/4a/f06fb255332475e10000000a42189c/content.htm](http://help.sap.com/saphelp_nw74/helpdata/en/4a/f06fb255332475e10000000a42189c/content.htm)
-
-## Dealing with SAP Jar Dependencies
-Although technically out of scope of these plugins, many will wonder how to do a gradle build if your project depends on some SAP (jar) dependencies. There are a few solutions, depending on your preference and project structure.
-
-The first and simplest is to put all the SAP jars into a folder and just use a files or fileTree dependency. I've done this on many occasions and it works pretty well. Although I would recommend against storing the SAP jar files in source control in the same project as your code.
-
-```groovy
-dependencies {
-	runtime files('libs/a.jar', 'libs/b.jar')
-	runtime fileTree(dir: 'libs', include: '*.jar')
-}
-```
-
-Another solution is to install your SAP jar files into your local maven repo ($USER_HOME/.m2). Here are some sample scripts to do that.
-
-```sh
-#!/usr/bin/env bash
-file=$1
-filename=$(basename $file .jar)
-cleanname=$(echo $filename | sed 's/~/-/g')
-mvn install:install-file -Dfile="$file" -DgroupId='com.sap.nw' -DartifactId="$cleanname" -Dversion='7.31' -Dpackaging=jar
-```
-
-Or many files at once:
-
-```sh
-#!/usr/bin/env bash
-for file in `find . -name '*.jar' | sort`; do
-	filename=$(basename $file .jar)
-	cleanname=$(echo $filename | sed 's/~/-/g')
-	cmd="mvn install:install-file -Dfile=\"$file\" -DgroupId=\"com.sap.nw\" -DartifactId=\"$cleanname\" -Dversion=\"7.31\" -Dpackaging=jar"
-	echo $cmd >> $outputSh
-	cmdBat="call $cmd"
-	echo $cmdBat >> $outputBat
-done
-```
-
-I wish I could set up a public maven repo with all the NetWeaver jar files in it, but I'm not sure of the legality of that. So I play it safe and don't put any SAP provided jar files online. Ideally SAP would do that. Although ideally, they would also take a more open approach with the build tools too.
-
 ## Example
 
 Check out the example folder for a more in depth example of a multi-project build with a common utility project, a web project and an ejb module project.
+
+## Deployment
+
+See [docs/deployment.md](docs/deployment.md)
+
+## Dealing with SAP Jar Dependencies
+
+See [docs/sap-jar-dependencies.md](docs/sap-jar-dependencies.md)
 
 ## Future Plans / TODO
 - More tests
